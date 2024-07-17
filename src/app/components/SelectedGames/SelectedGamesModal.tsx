@@ -19,7 +19,7 @@ const SelectedGamesModal = ({
     <>
       <button
         onClick={toggleList}
-        className="fixed bottom-4 right-4 z-10 bg-white text-black border-transparent border-2 p-4 font-bold text-lg rounded-lg hover:bg-black hover:text-white hover:border-white transition-colors duration-100 ease-in-out"
+        className="fixed top-4 right-4 z-10 bg-white text-black p-2 font-semibold text-lg rounded-lg hover:bg-blue-500 hover:text-white transition-colors duration-100 ease-in-out"
       >
         {selectedGames.length} {selectedGames.length === 1 ? 'game' : 'games'} selected
       </button>
@@ -34,7 +34,7 @@ const SelectedGamesModal = ({
 
       {/* The actual modal */}
       {showList && (
-        <div className="fixed bottom-0 right-0 md:bottom-4 md:right-4 z-50 bg-neutral-800 p-4 rounded-t-xl md:rounded-md">
+        <div className="fixed top-0 right-0 md:top-4 md:right-4 z-50 bg-neutral-800 p-4 rounded-t-xl md:rounded-md">
           <SelectedGamesList selectedGames={selectedGames} onRemoveGame={onRemoveGame} />
         </div>
       )}
