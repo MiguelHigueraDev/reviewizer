@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { GameResult } from './interfaces/GameResult';
 import SelectedGamesModal from './components/SelectedGames/SelectedGamesModal';
 import AppIntro from './components/AppIntro';
+import SummaryButton from './components/SummarySection/SummaryButton';
 
 export default function Home() {
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
@@ -23,7 +24,7 @@ export default function Home() {
   return (
     <main className="flex min-h-screen max-w-7xl mx-auto gap-10 items-center justify-center p-24">
       <div className="w-1/2">
-       <AppIntro />
+        <AppIntro />
       </div>
       <div className="w-1/2">
         <GameSearch
@@ -33,23 +34,7 @@ export default function Home() {
         />
         <hr className="w-full mt-4 border-neutral-600" />
 
-        {selectedGames.length > 0 ? (
-          <button
-            type="button"
-            className="mt-4 mb-2 md:mb-0 p-2 bg-blue-700 hover:bg-blue-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            Generate {selectedGames.length === 1 ? 'summary' : 'summaries'} for{' '}
-            {selectedGames.length}{' '}
-            {selectedGames.length === 1 ? 'game' : 'games'}
-          </button>
-        ) : (
-          <button
-            className="mt-4 mb-2 md:mb-0 p-2 bg-blue-700 hover:bg-blue-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled
-          >
-            Select at least one game
-          </button>
-        )}
+        <SummaryButton selectedGames={selectedGames} />
       </div>
 
       <SelectedGamesModal
