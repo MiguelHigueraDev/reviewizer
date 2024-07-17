@@ -5,11 +5,13 @@ import GameSearchResults from './GameSearchResults';
 import { fetchGames } from './dataFetching';
 import { GameResult } from '@/app/interfaces/GameResult';
 import SelectedGamesModal from '../SelectedGames/SelectedGamesModal';
+import GameResultsSkeleton from '../shared/Skeletons/GameResultsSkeleton';
 
 const GameSearch = () => {
   const [query, setQuery] = useState('');
   const [gameResults, setGameResults] = useState([] as GameResult[]);
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -29,7 +31,10 @@ const GameSearch = () => {
   const searchGames = async () => {
     if (query === '') return;
     setGameResults([]);
+    setIsLoading(true);
+
     const games = await fetchGames(query);
+    setIsLoading(false);
     setGameResults(games);
   };
 
@@ -52,12 +57,17 @@ const GameSearch = () => {
       >
         Search games
       </button>
-      <GameSearchResults
-        results={gameResults}
-        selectedGames={selectedGames}
-        onAddGame={handleAddGame}
-        onRemoveGame={handleRemoveGame}
-      />
+      {isLoading ? (
+        <GameResultsSkeleton />
+      ) : (
+        <GameSearchResults
+          results={gameResults}
+          selectedGames={selectedGames}
+          onAddGame={handleAddGame}
+          onRemoveGame={handleRemoveGame}
+        />
+      )}
+      
       <SelectedGamesModal
         selectedGames={selectedGames}
         onRemoveGame={handleRemoveGame}
