@@ -17,18 +17,20 @@ const GameSearch = () => {
 
   const handleAddGame = (game: GameResult) => {
     if (selectedGames.length >= 10) return;
-    if (selectedGames.find((selectedGame) => selectedGame.appId === game.appId)) return;
+    if (selectedGames.find((selectedGame) => selectedGame.appId === game.appId))
+      return;
     setSelectedGames([...selectedGames, game]);
-  }
+  };
 
   const handleRemoveGame = (game: GameResult) => {
     setSelectedGames(selectedGames.filter((g) => game.appId !== g.appId));
-  }
+  };
 
   const searchGames = async () => {
+    if (query === '') return;
     const games = await searchGameRaw(query);
     setGameResults(games);
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -41,9 +43,24 @@ const GameSearch = () => {
         onKeyDown={(e) => e.key === 'Enter' && searchGames()}
         onChange={handleChange}
       />
-      <button type="button" className="mt-2 mb-5 p-2 bg-neutral-700 hover:bg-neutral-600 transition-colors duration-100 w-full rounded-md" onClick={searchGames}>Search games</button>
-      <GameSearchResults results={gameResults} selectedGames={selectedGames} onAddGame={handleAddGame} onRemoveGame={handleRemoveGame}/>
-      <SelectedGamesModal selectedGames={selectedGames} onRemoveGame={handleRemoveGame} />
+      <button
+        type="button"
+        className="mt-2 mb-5 p-2 bg-neutral-700 hover:bg-neutral-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+        onClick={searchGames}
+        disabled={query.length < 1}
+      >
+        Search games
+      </button>
+      <GameSearchResults
+        results={gameResults}
+        selectedGames={selectedGames}
+        onAddGame={handleAddGame}
+        onRemoveGame={handleRemoveGame}
+      />
+      <SelectedGamesModal
+        selectedGames={selectedGames}
+        onRemoveGame={handleRemoveGame}
+      />
     </div>
   );
 };
