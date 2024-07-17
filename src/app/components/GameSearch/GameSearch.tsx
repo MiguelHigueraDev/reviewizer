@@ -3,33 +3,28 @@
 import React, { useState } from 'react';
 import GameSearchResults from './GameSearchResults';
 import { fetchGames } from './dataFetching';
-import { GameResult } from '@/app/interfaces/GameResult';
-import SelectedGamesModal from '../SelectedGames/SelectedGamesModal';
 import GameResultsSkeleton from '../shared/Skeletons/GameResultsSkeleton';
+import { GameResult } from '@/app/interfaces/GameResult';
 
-const GameSearch = () => {
+const GameSearch = ({
+  selectedGames,
+  onAddGame,
+  onRemoveGame,
+}: {
+  selectedGames: GameResult[];
+  onAddGame: (game: GameResult) => void;
+  onRemoveGame: (game: GameResult) => void;
+}) => {
   const [query, setQuery] = useState('');
-  const [gameResults, setGameResults] = useState([] as GameResult[]);
-  const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [gameResults, setGameResults] = useState([] as GameResult[]);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
   };
 
-  const handleAddGame = (game: GameResult) => {
-    if (selectedGames.length >= 10) return;
-    if (selectedGames.find((selectedGame) => selectedGame.appId === game.appId))
-      return;
-    setSelectedGames([...selectedGames, game]);
-  };
-
-  const handleRemoveGame = (game: GameResult) => {
-    setSelectedGames(selectedGames.filter((g) => game.appId !== g.appId));
-  };
-
   const searchGames = async () => {
-    if (query === '') return;
+    if (query === '' || isLoading) return;
     setGameResults([]);
     setIsLoading(true);
 
@@ -63,34 +58,10 @@ const GameSearch = () => {
         <GameSearchResults
           results={gameResults}
           selectedGames={selectedGames}
-          onAddGame={handleAddGame}
-          onRemoveGame={handleRemoveGame}
+          onAddGame={onAddGame}
+          onRemoveGame={onRemoveGame}
         />
       )}
-
-      <hr className="w-full mt-4 border-neutral-600" />
-
-      {selectedGames.length > 0 ? (
-        <button
-          type="button"
-          className="mt-4 mb-2 md:mb-0 p-2 bg-blue-700 hover:bg-blue-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Generate {selectedGames.length === 1 ? 'summary' : 'summaries'} for{' '}
-          {selectedGames.length} {selectedGames.length === 1 ? 'game' : 'games'}
-        </button>
-      ) : (
-        <button
-          className="mt-4 mb-2 md:mb-0 p-2 bg-blue-700 hover:bg-blue-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled
-        >
-          Select at least one game
-        </button>
-      )}
-
-      <SelectedGamesModal
-        selectedGames={selectedGames}
-        onRemoveGame={handleRemoveGame}
-      />
     </div>
   );
 };
