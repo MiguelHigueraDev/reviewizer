@@ -2,14 +2,16 @@
 
 import React, { useState } from 'react';
 import GameSearchResults from './GameSearchResults';
-import { searchGameRaw } from './dataFetching';
+import { fetchGames } from './dataFetching';
 import { GameResult } from '@/app/interfaces/GameResult';
 import SelectedGamesModal from '../SelectedGames/SelectedGamesModal';
+import GameResultsSkeleton from '../shared/Skeletons/GameResultsSkeleton';
 
 const GameSearch = () => {
   const [query, setQuery] = useState('');
   const [gameResults, setGameResults] = useState([] as GameResult[]);
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setQuery(event.target.value);
@@ -17,18 +19,24 @@ const GameSearch = () => {
 
   const handleAddGame = (game: GameResult) => {
     if (selectedGames.length >= 10) return;
-    if (selectedGames.find((selectedGame) => selectedGame.appId === game.appId)) return;
+    if (selectedGames.find((selectedGame) => selectedGame.appId === game.appId))
+      return;
     setSelectedGames([...selectedGames, game]);
-  }
+  };
 
   const handleRemoveGame = (game: GameResult) => {
     setSelectedGames(selectedGames.filter((g) => game.appId !== g.appId));
-  }
+  };
 
   const searchGames = async () => {
-    const games = await searchGameRaw(query);
+    if (query === '') return;
+    setGameResults([]);
+    setIsLoading(true);
+
+    const games = await fetchGames(query);
+    setIsLoading(false);
     setGameResults(games);
-  }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center">
@@ -41,9 +49,29 @@ const GameSearch = () => {
         onKeyDown={(e) => e.key === 'Enter' && searchGames()}
         onChange={handleChange}
       />
-      <button type="button" className="mt-2 mb-5 p-2 bg-neutral-700 hover:bg-neutral-600 transition-colors duration-100 w-full rounded-md" onClick={searchGames}>Search games</button>
-      <GameSearchResults results={gameResults} selectedGames={selectedGames} onAddGame={handleAddGame} onRemoveGame={handleRemoveGame}/>
-      <SelectedGamesModal selectedGames={selectedGames} onRemoveGame={handleRemoveGame} />
+      <button
+        type="button"
+        className="mt-2 mb-5 p-2 bg-neutral-700 hover:bg-neutral-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
+        onClick={searchGames}
+        disabled={query.length < 1}
+      >
+        Search games
+      </button>
+      {isLoading ? (
+        <GameResultsSkeleton />
+      ) : (
+        <GameSearchResults
+          results={gameResults}
+          selectedGames={selectedGames}
+          onAddGame={handleAddGame}
+          onRemoveGame={handleRemoveGame}
+        />
+      )}
+      
+      <SelectedGamesModal
+        selectedGames={selectedGames}
+        onRemoveGame={handleRemoveGame}
+      />
     </div>
   );
 };
