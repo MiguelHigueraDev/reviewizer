@@ -53,7 +53,7 @@ const GameSearch = () => {
         type="button"
         className="mt-2 mb-5 p-2 bg-neutral-700 hover:bg-neutral-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
         onClick={searchGames}
-        disabled={query.length < 1}
+        disabled={query.length < 1 || isLoading}
       >
         Search games
       </button>
@@ -74,7 +74,6 @@ const GameSearch = () => {
         <button
           type="button"
           className="mt-4 mb-2 md:mb-0 p-2 bg-blue-700 hover:bg-blue-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled={query.length < 1}
         >
           Generate {selectedGames.length === 1 ? 'summary' : 'summaries'} for{' '}
           {selectedGames.length} {selectedGames.length === 1 ? 'game' : 'games'}
