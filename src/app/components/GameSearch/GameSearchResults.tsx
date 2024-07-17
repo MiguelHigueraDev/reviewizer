@@ -28,7 +28,25 @@ const GameSearchResults = ({
             </p>
           </div>
 
-          
+          <button
+            className="p-1.5 bg-neutral-800 rounded-md hover:bg-neutral-700 transition-colors duration-100"
+            onClick={() =>
+              selectedGames.some((g) => g.appId === game.appId)
+                ? onRemoveGame(game)
+                : onAddGame(game)
+            }
+            aria-label={
+              selectedGames.some((g) => g.appId === game.appId)
+                ? 'Remove game from selected games'
+                : 'Add game to selected games'
+            }
+          >
+            {selectedGames.some((g) => g.appId === game.appId) ? (
+              <IconMinus />
+            ) : (
+              <IconPlus />
+            )}
+          </button>
         </li>
       ))}
     </ol>
