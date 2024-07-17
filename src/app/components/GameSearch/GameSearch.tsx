@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import GameSearchResults from './GameSearchResults';
-import { searchGameRaw } from './dataFetching';
+import { fetchGames } from './dataFetching';
 import { GameResult } from '@/app/interfaces/GameResult';
 import SelectedGamesModal from '../SelectedGames/SelectedGamesModal';
 
@@ -28,7 +28,8 @@ const GameSearch = () => {
 
   const searchGames = async () => {
     if (query === '') return;
-    const games = await searchGameRaw(query);
+    setGameResults([]);
+    const games = await fetchGames(query);
     setGameResults(games);
   };
 

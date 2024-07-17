@@ -33,7 +33,7 @@ export const fetchReviews = async (
 };
 
 // This returns raw HTML that needs to be parsed by extractGameList
-export const searchGameRaw = async (query: string): Promise<GameResult[]> => {
+export const fetchGames = async (query: string): Promise<GameResult[]> => {
   try {
     const response = await fetch(`${SEARCH_GAME_URL}${query}`);
     if (!response.ok) throw new Error('Failed to search for games');
