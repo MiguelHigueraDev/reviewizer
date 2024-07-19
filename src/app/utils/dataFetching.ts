@@ -5,26 +5,23 @@ import { ReviewResponse } from '@/app/interfaces/ReviewResponse';
 import { GameResult } from '@/app/interfaces/GameResult';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
-if (!GOOGLE_AI_KEY) throw new Error('Missing Google AI key');
-const genAI = new GoogleGenerativeAI(GOOGLE_AI_KEY);
-const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
-
 const REVIEWS_URL = 'https://store.steampowered.com/appreviews/';
 // Category 998 is for games only
 const SEARCH_GAME_URL =
   'https://store.steampowered.com/search/?category1=998&term=';
 
-type ReviewType = 'all' | 'positive' | 'negative';
+const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
+if (!GOOGLE_AI_KEY) throw new Error('Missing Google AI key');
+const genAI = new GoogleGenerativeAI(GOOGLE_AI_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 export const fetchReviews = async (
   appId: string,
   title: string,
-  type: ReviewType
 ): Promise<ReviewResponse> => {
   try {
     const response = await fetch(
-      `${REVIEWS_URL}${appId}?json=1&filter=${type}`
+      `${REVIEWS_URL}${appId}?use_review_quality=0&cursor=*&day_range=30&start_date=-1&end_date=-1&date_range_type=all&filter=summary&language=english&l=english&review_type=all&purchase_type=all&playtime_filter_min=0&playtime_filter_max=0&filter_offtopic_activity=1&summary_num_positive_reviews=30&summary_num_reviews=15&json=1`
     );
     if (!response.ok) throw new Error('Failed to fetch reviews');
 
@@ -90,11 +87,11 @@ const extractGameList = (html: string): GameResult[] => {
   return games;
 };
 
-export const fetchAiSummary = async (text: string): Promise<string> => {
+export const fetchAiSummary = async (text: string, title: string): Promise<string> => {
   const prompt = `Summarize the following reviews. 
   Each review is separated by a line break. 
   Ignore any irrelevant reviews like ASCII art or jokes. 
-  Besides the summary, enumerate at most five positive and negative points about the games. 
+  Besides the summary, enumerate at most five positive and negative points about the games.
   Use the following JSON template for the summary. Only export JSON, don't use markdown or anything else.
   {
     "title": "[game title]",
@@ -102,6 +99,8 @@ export const fetchAiSummary = async (text: string): Promise<string> => {
     "positive": ["[positive points]"],
     "negative": ["[negative points]"],
   }
+  Game title:
+  ${title}
   Review list: 
   ${text}`;
 

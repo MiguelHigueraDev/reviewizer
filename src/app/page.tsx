@@ -8,7 +8,7 @@ import AppIntro from './components/AppIntro';
 import SummaryList from './components/SummarySection/SummaryList';
 import { fetchAiSummary, fetchReviews } from './utils/dataFetching';
 import { ReviewList } from './interfaces/ReviewList';
-import GetReviewsButton from './components/ReviewSection/GetReviewsButton';
+import GetReviewsButton from './components/SummarySection/GetReviewsButton';
 import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
 import { SummaryResponse } from './interfaces/SummaryResponse';
 import SummaryListSkeleton from './components/SummarySection/SummaryListSkeleton';
@@ -35,54 +35,59 @@ export default function Home() {
 
   const handleGetReviews = async () => {
     setSummariesLoading(true);
+    try {
+      const reviews = await fetchAllReviews(selectedGames);
+      setReviews(reviews);
+      console.log(reviews);
 
-    const reviewPromises = selectedGames.map((game) =>
-      fetchReviews(game.appId, game.title, 'all')
+      const filteredReviews = filterEmptyReviews(reviews);
+      if (filteredReviews.length === 0) {
+        alert('No reviews found for selected games');
+        setSummaries([]);
+      } else {
+        if (filteredReviews.length !== reviews.length) {
+          alert('Some games have no reviews');
+        }
+        const summaries = await fetchAllSummaries(filteredReviews);
+        setSummaries(summaries);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+      alert('Error fetching reviews or AI summaries.');
+    } finally {
+      setSummariesLoading(false);
+    }
+  };
+
+  const fetchAllReviews = async (games: GameResult[]) => {
+    const reviewPromises = games.map((game) =>
+      fetchReviews(game.appId, game.title)
     );
     const reviewResponses = await Promise.all(reviewPromises);
-    const reviews: ReviewList[] = reviewResponses.map((response) => ({
+    return reviewResponses.map((response) => ({
       appId: response.appId,
       title: response.title,
       reviews: response.reviews,
     }));
-    setReviews(reviews);
-    console.log(reviews);
-
-    // After getting reviews, get summaries
-    getSummaries(reviews);
   };
 
-  const getSummaries = async (reviews: ReviewList[]) => {
-    // Filter out empty reviews
-    const filteredReviews = filterEmptyReviews(reviews);
-    if (filteredReviews.length === 0) {
-      alert('No reviews found for selected games');
-      setSummaries([]);
-      setSummariesLoading(false);
-      return;
-    }
-    if (filteredReviews.length !== reviews.length) {
-      alert('Some games have no reviews');
-    }
-
-    try {
-      const summaryPromises = filteredReviews.map((review) =>
-        fetchAiSummary(review.reviews.map((r) => r.review).join('\n'))
-      );
-
-      const summaries = await Promise.all(summaryPromises);
-
-      const parsedSummaries: SummaryResponse[] = summaries.map((summary) =>
-        JSON.parse(summary)
-      );
-
-      setSummaries(parsedSummaries);
-    } catch (error) {
-      console.error('Error fetching summaries:', error);
-      alert('Error fetching AI summaries.');
-    } finally {
-      setSummariesLoading(false);
-    }
+  const fetchAllSummaries = async (reviews: ReviewList[]) => {
+    const summaryPromises = reviews.map((review) =>
+      fetchAiSummary(review.reviews.map((r) => r.review).join('\n'), review.title)
+    );
+    
+    const summaries = await Promise.all(summaryPromises);
+  
+    // If there is an error parsing a summary, log it and continue, ignoring it
+    return summaries.reduce((acc: SummaryResponse[], summary) => {
+      try {
+        const parsedSummary = JSON.parse(summary);
+        acc.push(parsedSummary);
+      } catch (error) {
+        console.error('Error parsing summary:', error);
+      }
+      return acc;
+    }, []);
   };
 
   const filterEmptyReviews = (reviews: ReviewList[]) => {
