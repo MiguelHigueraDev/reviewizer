@@ -66,18 +66,26 @@ export default function Home() {
       alert('Some games have no reviews');
     }
 
-    const summaryPromises = filteredReviews.map((review) =>
-      fetchAiSummary(review.reviews.map((r) => r.review).join('\n'))
-    );
+    try {
+      const summaryPromises = filteredReviews.map((review) =>
+        fetchAiSummary(review.reviews.map((r) => r.review).join('\n'))
+      );
+  
+      const summaries = await Promise.all(summaryPromises);
+  
+      const parsedSummaries: SummaryResponse[] = summaries.map((summary) =>
+        JSON.parse(summary)
+      );
+  
+      setSummaries(parsedSummaries);
+    } catch (error) {
+      console.error('Error fetching summaries:', error);
+      alert('Error fetching AI summaries.');
+    } finally {
+      setSummariesLoading(false);
+    }
 
-    const summaries = await Promise.all(summaryPromises);
 
-    const parsedSummaries: SummaryResponse[] = summaries.map((summary) =>
-      JSON.parse(summary)
-    );
-
-    setSummaries(parsedSummaries);
-    setSummariesLoading(false);
   };
 
   const filterEmptyReviews = (reviews: ReviewList[]) => {
@@ -95,6 +103,7 @@ export default function Home() {
       <GetReviewsButton
         selectedGames={selectedGames}
         onClick={handleGetReviews}
+        isLoading={summariesLoading}
       />
 
       <hr className="w-full mt-4 border-neutral-600" />

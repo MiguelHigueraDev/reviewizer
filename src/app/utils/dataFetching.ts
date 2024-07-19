@@ -105,9 +105,13 @@ export const fetchAiSummary = async (text: string): Promise<string> => {
   Review list: 
   ${text}`;
 
-  const result = await model.generateContent(prompt);
-  if (!result.response) throw new Error('Failed to generate summary');
-  const output = result.response.text();
+  try {
+    const result = await model.generateContent(prompt);
+    const output = result.response.text();
+    return output;
+  } catch (error) {
+    console.error('Error fetching AI summary:', error);
+    throw error;
+  }
 
-  return output;
 };
