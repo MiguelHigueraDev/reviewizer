@@ -1,8 +1,14 @@
 'use server';
 
-import * as cheerio from 'cheerio'
+import * as cheerio from 'cheerio';
 import { ReviewResponse } from '@/app/interfaces/ReviewResponse';
 import { GameResult } from '@/app/interfaces/GameResult';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+
+const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
+if (!GOOGLE_AI_KEY) throw new Error('Missing Google AI key');
+const genAI = new GoogleGenerativeAI(GOOGLE_AI_KEY);
+const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
 
 const REVIEWS_URL = 'https://store.steampowered.com/appreviews/';
 // Category 998 is for games only
@@ -45,7 +51,7 @@ const filterReviews = async (reviewResponse: ReviewResponse) => {
   );
 
   return { ...reviewResponse, reviews: filteredReviews };
-}
+};
 
 // This returns raw HTML that needs to be parsed by extractGameList
 export const fetchGames = async (query: string): Promise<GameResult[]> => {
@@ -63,19 +69,45 @@ export const fetchGames = async (query: string): Promise<GameResult[]> => {
 
 // Get 10 most relevant games from the search results
 const extractGameList = (html: string): GameResult[] => {
-    const $ = cheerio.load(html);
-    const games: GameResult[] = [];
-    $('.search_result_row').each((_, element) => {
-        if (games.length >= 10) return;
+  const $ = cheerio.load(html);
+  const games: GameResult[] = [];
+  $('.search_result_row').each((_, element) => {
+    if (games.length >= 10) return;
 
-        const appId = $(element).attr('data-ds-appid');
-        const title = $(element).find('.title').text();
-        const releaseDate = $(element).find('.search_released').text().trim().replaceAll('\n', '');
-        const imageUrl = $(element).find('.search_capsule img').attr('src');
-        const url = $(element).attr('href');
-        if (appId && title && releaseDate && imageUrl && url)
-            games.push({ appId, title, releaseDate, imageUrl, url });
-    });
-    
-    return games;
-}
+    const appId = $(element).attr('data-ds-appid');
+    const title = $(element).find('.title').text();
+    const releaseDate = $(element)
+      .find('.search_released')
+      .text()
+      .trim()
+      .replaceAll('\n', '');
+    const imageUrl = $(element).find('.search_capsule img').attr('src');
+    const url = $(element).attr('href');
+    if (appId && title && releaseDate && imageUrl && url)
+      games.push({ appId, title, releaseDate, imageUrl, url });
+  });
+
+  return games;
+};
+
+export const fetchAiSummary = async (text: string): Promise<string> => {
+  const prompt = `Summarize the following reviews. 
+  Each review is separated by a line break. 
+  Ignore any irrelevant reviews like ASCII art or jokes. 
+  Besides the summary, enumerate at most five positive and negative points about the games. 
+  Use the following JSON template for the summary. Only export JSON, don't use markdown or anything else.
+  {
+    "title": "[game title]",
+    "summary": "[review summary]",
+    "positive": ["[positive points]"],
+    "negative": ["[negative points]"],
+  }
+  Review list: 
+  ${text}`;
+
+  const result = await model.generateContent(prompt);
+  if (!result.response) throw new Error('Failed to generate summary');
+  const output = result.response.text();
+
+  return output;
+};
