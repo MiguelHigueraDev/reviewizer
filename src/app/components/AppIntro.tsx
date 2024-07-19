@@ -1,6 +1,6 @@
 const AppIntro = () => {
   return (
-    <>
+    <div className="mb-5">
       {/* Name and logo */}
       <div>
         <h1 className="text-4xl font-bold">Reviewizer AI 🤖</h1>
@@ -11,26 +11,10 @@ const AppIntro = () => {
       {/* How it works */}
       <div>
         <h2>How it works</h2>
-        <ol>
-          <li>
-            <div>
-              <h3>Search up to 10 Steam games that you are interested in</h3>
-              <p>You can also enter a store link or an AppID</p>
-            </div>
-          </li>
-          <li>
-            <div>
-              <h3>Select a mode</h3>
-              <p>Summary Mode</p>
-              <p>Contrast Mode</p>
-            </div>
-          </li>
-          <li>
-            <div>The AI will select games for you!</div>
-          </li>
-        </ol>
+        <p>Search up to 10 games you are interested in</p>
+        <p>The AI will summarize their reviews and you can decide which one is the best!</p>
       </div>
-    </>
+    </div>
   );
 };
 

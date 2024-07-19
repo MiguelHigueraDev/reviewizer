@@ -6,20 +6,22 @@ import { GameResult } from './interfaces/GameResult';
 import SelectedGamesModal from './components/SelectedGames/SelectedGamesModal';
 import AppIntro from './components/AppIntro';
 import SummaryList from './components/SummarySection/SummaryList';
-import { fetchReviews } from './utils/dataFetching';
-import ReviewCarousel from './components/ReviewSection/ReviewCarousel';
+import { fetchAiSummary, fetchReviews } from './utils/dataFetching';
 import { ReviewList } from './interfaces/ReviewList';
 import GetReviewsButton from './components/ReviewSection/GetReviewsButton';
 import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
 import ReviewsModal from './components/ReviewSection/ReviewsModal';
+import { SummaryResponse } from './interfaces/SummaryResponse';
+import SummaryListSkeleton from './components/shared/Skeletons/SummaryListSkeleton';
 
 export default function Home() {
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
-  const [summaries, setSummaries] = useState([] as string[]);
-  const [reviews, setReviews] = useState([] as ReviewList[]);
+  const [summaries, setSummaries] = useState([] as SummaryResponse[]);
+  const [_, setReviews] = useState([] as ReviewList[]);
 
   const [isSelectedModalVisible, setIsSelectedModalVisible] = useState(false);
-  const [isReviewsModalVisible, setIsReviewsModalVisible] = useState(false);
+
+  const [summariesLoading, setSummariesLoading] = useState(false);
 
   const handleAddGame = (game: GameResult) => {
     if (selectedGames.length >= 10) return;
@@ -33,39 +35,84 @@ export default function Home() {
   };
 
   const handleGetReviews = async () => {
+    setSummariesLoading(true);
+
     const reviewPromises = selectedGames.map((game) =>
       fetchReviews(game.appId, game.title, 'all')
     );
     const reviewResponses = await Promise.all(reviewPromises);
-    const reviews = reviewResponses.map((response) => ({
+    const reviews: ReviewList[] = reviewResponses.map((response) => ({
       appId: response.appId,
       title: response.title,
       reviews: response.reviews,
     }));
     setReviews(reviews);
+    console.log(reviews);
 
-    setIsReviewsModalVisible(true);
+    // After getting reviews, get summaries
+    getSummaries(reviews);
   };
 
-  return (
-    <main className="flex min-h-screen max-w-7xl mx-auto gap-10 items-center justify-center p-24">
-      <div className="w-1/2">
-        <AppIntro />
-      </div>
-      <div className="w-1/2">
-        <GameSearch
-          selectedGames={selectedGames}
-          onAddGame={handleAddGame}
-          onRemoveGame={handleRemoveGame}
-        />
-        <hr className="w-full mt-4 border-neutral-600" />
+  const getSummaries = async (reviews: ReviewList[]) => {
+    // Filter out empty reviews
+    const filteredReviews = filterEmptyReviews(reviews);
+    if (filteredReviews.length === 0) {
+      alert('No reviews found for selected games');
+      setSummaries([]);
+      setSummariesLoading(false);
+      return;
+    }
+    if (filteredReviews.length !== reviews.length) {
+      alert('Some games have no reviews');
+    }
 
-        <GetReviewsButton
-          selectedGames={selectedGames}
-          onClick={handleGetReviews}
-        />
+    try {
+      const summaryPromises = filteredReviews.map((review) =>
+        fetchAiSummary(review.reviews.map((r) => r.review).join('\n'))
+      );
+  
+      const summaries = await Promise.all(summaryPromises);
+  
+      const parsedSummaries: SummaryResponse[] = summaries.map((summary) =>
+        JSON.parse(summary)
+      );
+  
+      setSummaries(parsedSummaries);
+    } catch (error) {
+      console.error('Error fetching summaries:', error);
+      alert('Error fetching AI summaries.');
+    } finally {
+      setSummariesLoading(false);
+    }
+
+
+  };
+
+  const filterEmptyReviews = (reviews: ReviewList[]) => {
+    return reviews.filter((review) => review.reviews.length > 0);
+  }
+
+  return (
+    <main className="min-h-screen max-w-3xl mx-auto gap-10 items-center justify-center p-4 md:p-16">
+      <AppIntro />
+      <GameSearch
+        selectedGames={selectedGames}
+        onAddGame={handleAddGame}
+        onRemoveGame={handleRemoveGame}
+      />
+      <GetReviewsButton
+        selectedGames={selectedGames}
+        onClick={handleGetReviews}
+        isLoading={summariesLoading}
+      />
+
+      <hr className="w-full mt-4 border-neutral-600" />
+
+      {summariesLoading ? (
+        <SummaryListSkeleton />
+      ) : (
         <SummaryList summaries={summaries} />
-      </div>
+      )}
 
       {/* Selected games modal and toggle button */}
       <SelectedGamesModalButton
@@ -82,12 +129,6 @@ export default function Home() {
         onToggleVisibility={() =>
           setIsSelectedModalVisible(!isSelectedModalVisible)
         }
-      />
-
-      <ReviewsModal
-        isVisible={isReviewsModalVisible}
-        reviews={reviews}
-        onToggleVisibility={() => setIsReviewsModalVisible(false)}
       />
     </main>
   );
