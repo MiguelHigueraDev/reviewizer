@@ -12,14 +12,16 @@ import GetReviewsButton from './components/ReviewSection/GetReviewsButton';
 import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
 import ReviewsModal from './components/ReviewSection/ReviewsModal';
 import { SummaryResponse } from './interfaces/SummaryResponse';
+import SummaryListSkeleton from './components/shared/Skeletons/SummaryListSkeleton';
 
 export default function Home() {
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
   const [summaries, setSummaries] = useState([] as SummaryResponse[]);
-  const [reviews, setReviews] = useState([] as ReviewList[]);
+  const [_, setReviews] = useState([] as ReviewList[]);
 
   const [isSelectedModalVisible, setIsSelectedModalVisible] = useState(false);
-  const [isReviewsModalVisible, setIsReviewsModalVisible] = useState(false);
+
+  const [summariesLoading, setSummariesLoading] = useState(false);
 
   const handleAddGame = (game: GameResult) => {
     if (selectedGames.length >= 10) return;
@@ -33,6 +35,8 @@ export default function Home() {
   };
 
   const handleGetReviews = async () => {
+    setSummariesLoading(true);
+
     const reviewPromises = selectedGames.map((game) =>
       fetchReviews(game.appId, game.title, 'all')
     );
@@ -44,18 +48,40 @@ export default function Home() {
     }));
     setReviews(reviews);
     console.log(reviews);
-    getSummaries(reviews);
 
-    setIsReviewsModalVisible(true);
+    // After getting reviews, get summaries
+    getSummaries(reviews);
   };
 
   const getSummaries = async (reviews: ReviewList[]) => {
-    const summaryPromises = reviews.map((review) =>
+    // Filter out empty reviews
+    const filteredReviews = filterEmptyReviews(reviews);
+    if (filteredReviews.length === 0) {
+      alert('No reviews found for selected games');
+      setSummaries([]);
+      setSummariesLoading(false);
+      return;
+    }
+    if (filteredReviews.length !== reviews.length) {
+      alert('Some games have no reviews');
+    }
+
+    const summaryPromises = filteredReviews.map((review) =>
       fetchAiSummary(review.reviews.map((r) => r.review).join('\n'))
     );
+
     const summaries = await Promise.all(summaryPromises);
-    const parsedSummaries: SummaryResponse[] = summaries.map((summary) => JSON.parse(summary));
+
+    const parsedSummaries: SummaryResponse[] = summaries.map((summary) =>
+      JSON.parse(summary)
+    );
+
     setSummaries(parsedSummaries);
+    setSummariesLoading(false);
+  };
+
+  const filterEmptyReviews = (reviews: ReviewList[]) => {
+    return reviews.filter((review) => review.reviews.length > 0);
   }
 
   return (
@@ -66,13 +92,18 @@ export default function Home() {
         onAddGame={handleAddGame}
         onRemoveGame={handleRemoveGame}
       />
-      <hr className="w-full mt-4 border-neutral-600" />
-
       <GetReviewsButton
         selectedGames={selectedGames}
         onClick={handleGetReviews}
       />
-      <SummaryList summaries={summaries} />
+
+      <hr className="w-full mt-4 border-neutral-600" />
+
+      {summariesLoading ? (
+        <SummaryListSkeleton />
+      ) : (
+        <SummaryList summaries={summaries} />
+      )}
 
       {/* Selected games modal and toggle button */}
       <SelectedGamesModalButton
@@ -89,12 +120,6 @@ export default function Home() {
         onToggleVisibility={() =>
           setIsSelectedModalVisible(!isSelectedModalVisible)
         }
-      />
-
-      <ReviewsModal
-        isVisible={isReviewsModalVisible}
-        reviews={reviews}
-        onToggleVisibility={() => setIsReviewsModalVisible(false)}
       />
     </main>
   );
