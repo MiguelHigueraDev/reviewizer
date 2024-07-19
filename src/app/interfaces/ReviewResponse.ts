@@ -3,13 +3,15 @@ export interface ReviewResponse {
     query_summary: QuerySummary;
     reviews: Review[];
     cursor: string;
+    appId: string;
+    title: string;
 }
 
 interface QuerySummary {
     num_reviews: number;
 }
 
-interface Review {
+export interface Review {
     recommendationid: number;
     author: Author;
     language: string;

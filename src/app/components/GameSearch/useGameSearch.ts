@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { fetchGames } from "./dataFetching";
+import { fetchGames } from "../../utils/dataFetching";
 import { GameResult } from "@/app/interfaces/GameResult";
 
 const useGameSearch = () => {
