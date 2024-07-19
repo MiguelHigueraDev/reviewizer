@@ -7,7 +7,6 @@ import SelectedGamesModal from './components/SelectedGames/SelectedGamesModal';
 import AppIntro from './components/AppIntro';
 import SummaryList from './components/SummarySection/SummaryList';
 import { fetchReviews } from './utils/dataFetching';
-import ReviewCarousel from './components/ReviewSection/ReviewCarousel';
 import { ReviewList } from './interfaces/ReviewList';
 import GetReviewsButton from './components/ReviewSection/GetReviewsButton';
 import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
@@ -48,24 +47,20 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen max-w-7xl mx-auto gap-10 items-center justify-center p-24">
-      <div className="w-1/2">
-        <AppIntro />
-      </div>
-      <div className="w-1/2">
-        <GameSearch
-          selectedGames={selectedGames}
-          onAddGame={handleAddGame}
-          onRemoveGame={handleRemoveGame}
-        />
-        <hr className="w-full mt-4 border-neutral-600" />
+    <main className="min-h-screen max-w-3xl mx-auto gap-10 items-center justify-center p-4 md:p-16">
+      <AppIntro />
+      <GameSearch
+        selectedGames={selectedGames}
+        onAddGame={handleAddGame}
+        onRemoveGame={handleRemoveGame}
+      />
+      <hr className="w-full mt-4 border-neutral-600" />
 
-        <GetReviewsButton
-          selectedGames={selectedGames}
-          onClick={handleGetReviews}
-        />
-        <SummaryList summaries={summaries} />
-      </div>
+      <GetReviewsButton
+        selectedGames={selectedGames}
+        onClick={handleGetReviews}
+      />
+      <SummaryList summaries={summaries} />
 
       {/* Selected games modal and toggle button */}
       <SelectedGamesModalButton
