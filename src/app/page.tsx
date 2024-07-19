@@ -10,7 +10,6 @@ import { fetchAiSummary, fetchReviews } from './utils/dataFetching';
 import { ReviewList } from './interfaces/ReviewList';
 import GetReviewsButton from './components/ReviewSection/GetReviewsButton';
 import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
-import ReviewsModal from './components/ReviewSection/ReviewsModal';
 import { SummaryResponse } from './interfaces/SummaryResponse';
 import SummaryListSkeleton from './components/shared/Skeletons/SummaryListSkeleton';
 
@@ -70,13 +69,13 @@ export default function Home() {
       const summaryPromises = filteredReviews.map((review) =>
         fetchAiSummary(review.reviews.map((r) => r.review).join('\n'))
       );
-  
+
       const summaries = await Promise.all(summaryPromises);
-  
+
       const parsedSummaries: SummaryResponse[] = summaries.map((summary) =>
         JSON.parse(summary)
       );
-  
+
       setSummaries(parsedSummaries);
     } catch (error) {
       console.error('Error fetching summaries:', error);
@@ -84,35 +83,37 @@ export default function Home() {
     } finally {
       setSummariesLoading(false);
     }
-
-
   };
 
   const filterEmptyReviews = (reviews: ReviewList[]) => {
     return reviews.filter((review) => review.reviews.length > 0);
-  }
+  };
 
   return (
-    <main className="min-h-screen max-w-3xl mx-auto gap-10 items-center justify-center p-4 md:p-16">
-      <AppIntro />
-      <GameSearch
-        selectedGames={selectedGames}
-        onAddGame={handleAddGame}
-        onRemoveGame={handleRemoveGame}
-      />
-      <GetReviewsButton
-        selectedGames={selectedGames}
-        onClick={handleGetReviews}
-        isLoading={summariesLoading}
-      />
+    <main className="lg:flex min-h-screen items-start max-w-7xl mx-auto gap-10 justify-center p-4 md:p-16">
+      <div className="lg:w-1/2">
+        <AppIntro />
+        <GameSearch
+          selectedGames={selectedGames}
+          onAddGame={handleAddGame}
+          onRemoveGame={handleRemoveGame}
+        />
+        <GetReviewsButton
+          selectedGames={selectedGames}
+          onClick={handleGetReviews}
+          isLoading={summariesLoading}
+        />
 
-      <hr className="w-full mt-4 border-neutral-600" />
+        <hr className="block lg:hidden w-full mt-4 border-neutral-600" />
+      </div>
 
-      {summariesLoading ? (
-        <SummaryListSkeleton />
-      ) : (
-        <SummaryList summaries={summaries} />
-      )}
+      <div className="lg:w-1/2 self-center">
+        {summariesLoading ? (
+          <SummaryListSkeleton />
+        ) : (
+          <SummaryList summaries={summaries} />
+        )}
+      </div>
 
       {/* Selected games modal and toggle button */}
       <SelectedGamesModalButton

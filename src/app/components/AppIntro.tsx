@@ -1,6 +1,6 @@
 const AppIntro = () => {
   return (
-    <div className="mb-5">
+    <div className="mb-5 mt-16">
       {/* Name and logo */}
       <div>
         <h1 className="text-4xl font-bold">Reviewizer AI 🤖</h1>
