@@ -1,5 +1,5 @@
 import { GameResult } from '@/app/interfaces/GameResult';
-import { IconMinus, IconPlus } from '@tabler/icons-react';
+import { IconForbid, IconMinus, IconPlus } from '@tabler/icons-react';
 import React from 'react';
 
 const GameSearchResults = ({
@@ -37,29 +37,36 @@ const GameSearchResults = ({
             </p>
           </div>
 
-          <button
-            className={`p-1.5 ${
-              selectedGames.some((g) => g.appId === game.appId)
-                ? 'bg-red-600 hover:bg-red-500'
-                : 'bg-neutral-800 hover:bg-neutral-700'
-            } rounded-md transition-colors duration-100`}
-            onClick={() =>
-              selectedGames.some((g) => g.appId === game.appId)
-                ? onRemoveGame(game)
-                : onAddGame(game)
-            }
-            aria-label={
-              selectedGames.some((g) => g.appId === game.appId)
-                ? 'Remove game from selected games'
-                : 'Add game to selected games'
-            }
-          >
-            {selectedGames.some((g) => g.appId === game.appId) ? (
-              <IconMinus />
-            ) : (
-              <IconPlus />
-            )}
-          </button>
+          {/* Disable button if game is unreleased */}
+          {!Date.parse(game.releaseDate) || Date.parse(game.releaseDate) > Date.now() ? (
+            <button className="p-1.5 rounded-md transition-colors duration-100 bg-neutral-800 hover:bg-neutral-700 opacity-50" disabled>
+              <IconForbid />
+            </button>
+          ) : (
+            <button
+              className={`p-1.5 ${
+                selectedGames.some((g) => g.appId === game.appId)
+                  ? 'bg-red-600 hover:bg-red-500'
+                  : 'bg-neutral-800 hover:bg-neutral-700'
+              } rounded-md transition-colors duration-100`}
+              onClick={() =>
+                selectedGames.some((g) => g.appId === game.appId)
+                  ? onRemoveGame(game)
+                  : onAddGame(game)
+              }
+              aria-label={
+                selectedGames.some((g) => g.appId === game.appId)
+                  ? 'Remove game from selected games'
+                  : 'Add game to selected games'
+              }
+            >
+              {selectedGames.some((g) => g.appId === game.appId) ? (
+                <IconMinus />
+              ) : (
+                <IconPlus />
+              )}
+            </button>
+          )}
         </li>
       ))}
     </ol>
