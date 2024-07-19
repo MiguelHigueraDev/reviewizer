@@ -87,7 +87,7 @@ const extractGameList = (html: string): GameResult[] => {
   return games;
 };
 
-export const fetchAiSummary = async (text: string): Promise<string> => {
+export const fetchAiSummary = async (text: string, title: string): Promise<string> => {
   const prompt = `Summarize the following reviews. 
   Each review is separated by a line break. 
   Ignore any irrelevant reviews like ASCII art or jokes. 
@@ -99,6 +99,8 @@ export const fetchAiSummary = async (text: string): Promise<string> => {
     "positive": ["[positive points]"],
     "negative": ["[negative points]"],
   }
+  Game title:
+  ${title}
   Review list: 
   ${text}`;
 

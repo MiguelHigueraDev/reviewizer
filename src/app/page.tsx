@@ -73,7 +73,7 @@ export default function Home() {
 
   const fetchAllSummaries = async (reviews: ReviewList[]) => {
     const summaryPromises = reviews.map((review) =>
-      fetchAiSummary(review.reviews.map((r) => r.review).join('\n'))
+      fetchAiSummary(review.reviews.map((r) => r.review).join('\n'), review.title)
     );
     
     const summaries = await Promise.all(summaryPromises);
