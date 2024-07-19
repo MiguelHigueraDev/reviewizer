@@ -17,7 +17,7 @@ const SelectedGamesList = ({
           {selectedGames.map((game) => (
             <li className="flex gap-3 items-center" key={game.appId}>
               <a
-                className="w-1/4"
+                className="w-[120px] h-[45px] flex-shrink-0"
                 href={game.url}
                 target="_blank"
                 rel="noreferrer"
@@ -25,12 +25,12 @@ const SelectedGamesList = ({
                 <img src={game.imageUrl} alt={game.title} loading="lazy" />
               </a>
 
-              <div className="w-2/4 flex-grow">
+              <div className="flex-grow">
                 <h3 className="font-semibold text-md">{game.title}</h3>
               </div>
 
               <button
-                className="p-1.5 bg-neutral-700 rounded-md hover:bg-neutral-600 transition-colors duration-100"
+                className="p-1.5 bg-red-600 rounded-md hover:bg-red-500 transition-colors duration-100"
                 onClick={() => onRemoveGame(game)}
                 aria-label="Remove game from selected games"
               >

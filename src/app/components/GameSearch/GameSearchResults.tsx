@@ -17,8 +17,17 @@ const GameSearchResults = ({
     <ol className="flex gap-2 flex-col w-full">
       {results.map((game) => (
         <li className="flex gap-3 items-center" key={game.appId}>
-          <a href={game.url} target="_blank" rel="noreferrer">
-            <img src={game.imageUrl} alt={game.title} />
+          <a
+            href={game.url}
+            className="w-[120px] h-[45px] flex-shrink-0"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              src={game.imageUrl}
+              alt={game.title}
+              className="object-cover"
+            />
           </a>
 
           <div className="flex-grow">
@@ -29,7 +38,11 @@ const GameSearchResults = ({
           </div>
 
           <button
-            className="p-1.5 bg-neutral-800 rounded-md hover:bg-neutral-700 transition-colors duration-100"
+            className={`p-1.5 ${
+              selectedGames.some((g) => g.appId === game.appId)
+                ? 'bg-red-600 hover:bg-red-500'
+                : 'bg-neutral-800 hover:bg-neutral-700'
+            } rounded-md transition-colors duration-100`}
             onClick={() =>
               selectedGames.some((g) => g.appId === game.appId)
                 ? onRemoveGame(game)
