@@ -1,7 +1,7 @@
 'use client';
 
 import GameSearch from './components/GameSearch/GameSearch';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { GameResult } from './interfaces/GameResult';
 import SelectedGamesModal from './components/SelectedGames/SelectedGamesModal';
 import AppIntro from './components/AppIntro';
@@ -17,10 +17,10 @@ export default function Home() {
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
   const [summaries, setSummaries] = useState([] as SummaryResponse[]);
   const [_, setReviews] = useState([] as ReviewList[]);
-
   const [isSelectedModalVisible, setIsSelectedModalVisible] = useState(false);
-
   const [summariesLoading, setSummariesLoading] = useState(false);
+
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const handleAddGame = (game: GameResult) => {
     if (selectedGames.length >= 3) return;
@@ -35,6 +35,7 @@ export default function Home() {
 
   const handleGetReviews = async () => {
     setSummariesLoading(true);
+    scrollToBottom();
     try {
       const reviews = await fetchAllReviews(selectedGames);
       setReviews(reviews);
@@ -73,11 +74,14 @@ export default function Home() {
 
   const fetchAllSummaries = async (reviews: ReviewList[]) => {
     const summaryPromises = reviews.map((review) =>
-      fetchAiSummary(review.reviews.map((r) => r.review).join('\n'), review.title)
+      fetchAiSummary(
+        review.reviews.map((r) => r.review).join('\n'),
+        review.title
+      )
     );
-    
+
     const summaries = await Promise.all(summaryPromises);
-  
+
     // If there is an error parsing a summary, log it and continue, ignoring it
     return summaries.reduce((acc: SummaryResponse[], summary) => {
       try {
@@ -94,8 +98,21 @@ export default function Home() {
     return reviews.filter((review) => review.reviews.length > 0);
   };
 
+  // Scroll to bottom, needed for mobile so user sees the reviews
+  const scrollToBottom = () => {
+    setTimeout(() => {
+      containerRef.current?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'end',
+      });
+    }, 1500);
+  };
+
   return (
-    <main className="lg:flex min-h-screen items-start max-w-7xl mx-auto gap-10 justify-center p-4 md:p-16">
+    <main
+      ref={containerRef}
+      className="lg:flex min-h-screen items-start max-w-7xl mx-auto gap-10 justify-center p-4 md:p-16"
+    >
       <div className="lg:w-1/2">
         <AppIntro />
         <GameSearch
