@@ -1,6 +1,7 @@
 'use client';
 
 import { ReviewList } from '@/app/interfaces/ReviewList';
+import { fetchAiSummary } from '@/app/utils/dataFetching';
 import { useState } from 'react';
 
 const ReviewCarousel = ({ reviews }: { reviews: ReviewList[] }) => {
@@ -19,10 +20,11 @@ const ReviewCarousel = ({ reviews }: { reviews: ReviewList[] }) => {
     }
   };
 
-  const generateSummary = () => {
+  const generateSummary = async () => {
     const currentReviews = reviews[currentGameIndex].reviews;
     const reviewString = currentReviews.map((review) => review.review).join('\n');
-    console.log(reviewString);
+    const summary = await fetchAiSummary(reviewString);
+    console.log(summary);
   }
 
   return (

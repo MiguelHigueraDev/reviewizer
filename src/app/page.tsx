@@ -6,15 +6,16 @@ import { GameResult } from './interfaces/GameResult';
 import SelectedGamesModal from './components/SelectedGames/SelectedGamesModal';
 import AppIntro from './components/AppIntro';
 import SummaryList from './components/SummarySection/SummaryList';
-import { fetchReviews } from './utils/dataFetching';
+import { fetchAiSummary, fetchReviews } from './utils/dataFetching';
 import { ReviewList } from './interfaces/ReviewList';
 import GetReviewsButton from './components/ReviewSection/GetReviewsButton';
 import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
 import ReviewsModal from './components/ReviewSection/ReviewsModal';
+import { SummaryResponse } from './interfaces/SummaryResponse';
 
 export default function Home() {
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
-  const [summaries, setSummaries] = useState([] as string[]);
+  const [summaries, setSummaries] = useState([] as SummaryResponse[]);
   const [reviews, setReviews] = useState([] as ReviewList[]);
 
   const [isSelectedModalVisible, setIsSelectedModalVisible] = useState(false);
@@ -36,15 +37,26 @@ export default function Home() {
       fetchReviews(game.appId, game.title, 'all')
     );
     const reviewResponses = await Promise.all(reviewPromises);
-    const reviews = reviewResponses.map((response) => ({
+    const reviews: ReviewList[] = reviewResponses.map((response) => ({
       appId: response.appId,
       title: response.title,
       reviews: response.reviews,
     }));
     setReviews(reviews);
+    console.log(reviews);
+    getSummaries(reviews);
 
     setIsReviewsModalVisible(true);
   };
+
+  const getSummaries = async (reviews: ReviewList[]) => {
+    const summaryPromises = reviews.map((review) =>
+      fetchAiSummary(review.reviews.map((r) => r.review).join('\n'))
+    );
+    const summaries = await Promise.all(summaryPromises);
+    const parsedSummaries: SummaryResponse[] = summaries.map((summary) => JSON.parse(summary));
+    setSummaries(parsedSummaries);
+  }
 
   return (
     <main className="min-h-screen max-w-3xl mx-auto gap-10 items-center justify-center p-4 md:p-16">
