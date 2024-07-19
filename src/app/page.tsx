@@ -11,7 +11,7 @@ import { ReviewList } from './interfaces/ReviewList';
 import GetReviewsButton from './components/ReviewSection/GetReviewsButton';
 import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
 import { SummaryResponse } from './interfaces/SummaryResponse';
-import SummaryListSkeleton from './components/shared/Skeletons/SummaryListSkeleton';
+import SummaryListSkeleton from './components/SummarySection/SummaryListSkeleton';
 
 export default function Home() {
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);

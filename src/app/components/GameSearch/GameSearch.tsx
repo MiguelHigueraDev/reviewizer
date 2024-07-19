@@ -2,7 +2,7 @@
 
 import React from 'react';
 import GameSearchResults from './GameSearchResults';
-import GameResultsSkeleton from '../shared/Skeletons/GameResultsSkeleton';
+import GameResultsSkeleton from './GameResultsSkeleton';
 import GameSearchInput from './GameSearchInput';
 import useGameSearch from './useGameSearch';
 import { GameResult } from '@/app/interfaces/GameResult';
