@@ -23,9 +23,9 @@ const SummaryButtons = ({
       >
         <IconArrowLeft />
       </button>
-      <p className="font-bold md:text-lg">
+      <h4 className="font-bold md:text-lg text-center">
         {summaries[currentSummaryIndex].title}
-      </p>
+      </h4>
       <button
         onClick={() =>
           setCurrentSummaryIndex(currentSummaryIndex + (1 % summaryCount))
