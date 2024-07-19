@@ -23,7 +23,7 @@ export default function Home() {
   const [summariesLoading, setSummariesLoading] = useState(false);
 
   const handleAddGame = (game: GameResult) => {
-    if (selectedGames.length >= 10) return;
+    if (selectedGames.length >= 3) return;
     if (selectedGames.find((selectedGame) => selectedGame.appId === game.appId))
       return;
     setSelectedGames([...selectedGames, game]);
