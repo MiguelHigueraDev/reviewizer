@@ -13,6 +13,7 @@ type ReviewType = 'all' | 'positive' | 'negative';
 
 export const fetchReviews = async (
   appId: string,
+  title: string,
   type: ReviewType
 ): Promise<ReviewResponse> => {
   try {
@@ -25,12 +26,26 @@ export const fetchReviews = async (
     if (data.reviews.length < 1)
       throw new Error('App does not exist or does not have any reviews');
 
-    return data;
+    // Append app ID and title to the response
+    data.appId = appId;
+    data.title = title;
+
+    return filterReviews(data);
   } catch (error) {
     console.error('Error fetching reviews:', error);
     throw error;
   }
 };
+
+// Filter joke reviews and those that are too short (less than 10 words)
+const filterReviews = async (reviewResponse: ReviewResponse) => {
+  const filteredReviews = reviewResponse.reviews.filter(
+    (review) =>
+      review.review.trim().split(' ').length > 7 && review.votes_funny < 40
+  );
+
+  return { ...reviewResponse, reviews: filteredReviews };
+}
 
 // This returns raw HTML that needs to be parsed by extractGameList
 export const fetchGames = async (query: string): Promise<GameResult[]> => {
