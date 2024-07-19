@@ -37,7 +37,7 @@ export default function Home() {
     setSummariesLoading(true);
 
     const reviewPromises = selectedGames.map((game) =>
-      fetchReviews(game.appId, game.title, 'all')
+      fetchReviews(game.appId, game.title)
     );
     const reviewResponses = await Promise.all(reviewPromises);
     const reviews: ReviewList[] = reviewResponses.map((response) => ({
