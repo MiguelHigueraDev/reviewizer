@@ -75,8 +75,19 @@ export default function Home() {
     const summaryPromises = reviews.map((review) =>
       fetchAiSummary(review.reviews.map((r) => r.review).join('\n'))
     );
+    
     const summaries = await Promise.all(summaryPromises);
-    return summaries.map((summary) => JSON.parse(summary));
+  
+    // If there is an error parsing a summary, log it and continue, ignoring it
+    return summaries.reduce((acc: SummaryResponse[], summary) => {
+      try {
+        const parsedSummary = JSON.parse(summary);
+        acc.push(parsedSummary);
+      } catch (error) {
+        console.error('Error parsing summary:', error);
+      }
+      return acc;
+    }, []);
   };
 
   const filterEmptyReviews = (reviews: ReviewList[]) => {
