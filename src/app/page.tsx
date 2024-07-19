@@ -8,7 +8,7 @@ import AppIntro from './components/AppIntro';
 import SummaryList from './components/SummarySection/SummaryList';
 import { fetchAiSummary, fetchReviews } from './utils/dataFetching';
 import { ReviewList } from './interfaces/ReviewList';
-import GetReviewsButton from './components/ReviewSection/GetReviewsButton';
+import GetReviewsButton from './components/SummarySection/GetReviewsButton';
 import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
 import { SummaryResponse } from './interfaces/SummaryResponse';
 import SummaryListSkeleton from './components/SummarySection/SummaryListSkeleton';
