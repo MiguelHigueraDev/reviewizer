@@ -12,6 +12,7 @@ import GetReviewsButton from './components/SummarySection/GetReviewsButton';
 import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
 import { SummaryResponse } from './interfaces/SummaryResponse';
 import SummaryListSkeleton from './components/SummarySection/SummaryListSkeleton';
+import Disclaimer from './components/Disclaimer';
 
 export default function Home() {
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
@@ -125,6 +126,8 @@ export default function Home() {
           onClick={handleGetReviews}
           isLoading={summariesLoading}
         />
+
+        <Disclaimer />
 
         <hr className="block lg:hidden w-full mt-4 border-neutral-600" />
       </div>
