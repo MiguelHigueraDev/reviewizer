@@ -4,4 +4,5 @@ export interface SummaryResponse {
   summary: string;
   positive: string[];
   negative: string[];
+  error?: Error;
 }
