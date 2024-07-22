@@ -2,7 +2,7 @@ const Disclaimer = () => {
   return (
     <div className="mt-4">
       <p className="text-xs mb-2">
-        ⚠️ Experimental, games with low amount of reviews or high count of
+        ⚠️ Games with low amount of reviews or high count of
         inappropiate reviews may cause errors.
       </p>
       <p className="text-xs">

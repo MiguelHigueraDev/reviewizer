@@ -112,7 +112,7 @@ export default function Home() {
   return (
     <main
       ref={containerRef}
-      className="lg:flex min-h-screen items-start max-w-7xl mx-auto gap-10 justify-center p-4 md:p-16"
+      className="lg:flex min-h-screen items-center max-w-7xl mx-auto gap-10 justify-center p-4 md:p-16"
     >
       <div className="lg:w-1/2">
         <AppIntro />
