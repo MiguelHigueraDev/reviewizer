@@ -74,25 +74,33 @@ export default function Home() {
   };
 
   const fetchAllSummaries = async (reviews: ReviewList[]) => {
-    const summaryPromises = reviews.map((review) =>
-      fetchAiSummary(
-        review.reviews.map((r) => r.review).join('\n'),
-        review.title
-      )
-    );
-
-    const summaries = await Promise.all(summaryPromises);
-
-    // If there is an error parsing a summary, log it and continue, ignoring it
-    return summaries.reduce((acc: SummaryResponse[], summary) => {
+    const summaryPromises = reviews.map(async (review) => {
       try {
-        const parsedSummary = JSON.parse(summary);
-        acc.push(parsedSummary);
+        if (review.reviews.length === 0) throw new Error('No reviews found');
+        
+        const summary = await fetchAiSummary(
+          review.reviews.map((r) => r.review).join('\n'),
+          review.title
+        );
+
+        try {
+          return JSON.parse(summary);
+        } catch {
+          throw new Error('Error parsing JSON')
+        }
       } catch (error) {
-        console.error('Error parsing summary:', error);
+        return {
+          title: review.title,
+          summary: '[ERROR]',
+          positive: [],
+          negative: [],
+          error,
+        };
       }
-      return acc;
-    }, []);
+    });
+
+    const summaries: SummaryResponse[] = await Promise.all(summaryPromises);
+    return summaries;
   };
 
   const filterEmptyReviews = (reviews: ReviewList[]) => {
@@ -126,8 +134,6 @@ export default function Home() {
           onClick={handleGetReviews}
           isLoading={summariesLoading}
         />
-
-        <Disclaimer />
 
         <hr className="block lg:hidden w-full mt-4 border-neutral-600" />
       </div>
