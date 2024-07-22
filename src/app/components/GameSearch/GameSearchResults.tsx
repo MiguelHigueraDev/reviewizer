@@ -13,6 +13,11 @@ const GameSearchResults = ({
   onAddGame: (game: GameResult) => void;
   onRemoveGame: (game: GameResult) => void;
 }) => {
+
+  if (results.length < 1) {
+    return <p className="text-neutral-300">No results found.</p>;
+  }
+
   return (
     <ol className="flex gap-2 flex-col w-full">
       {results.map((game) => (
