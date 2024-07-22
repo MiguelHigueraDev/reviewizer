@@ -4,7 +4,7 @@ import React from 'react';
 
 const SummaryError = ({ error }: { error: Error }) => {
   return (
-    <div className="p-4 bg-neutral-800 mt-2 rounded-x h-[400px] flex flex-col items-center justify-center gap-5">
+    <div className="p-4 bg-neutral-800 mt-2 rounded-xl h-[400px] flex flex-col items-center justify-center gap-5">
       <IconBug width={40} height={40} />
       <p className="font-bold">
         Sorry, an error ocurred while generating the summary:
