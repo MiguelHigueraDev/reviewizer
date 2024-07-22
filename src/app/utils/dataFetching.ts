@@ -41,11 +41,17 @@ export const fetchReviews = async (
 };
 
 // Filter joke reviews and those that are too short (less than 10 words)
+// Remove non alphanumeric characters from the reviews
 const filterReviews = async (reviewResponse: ReviewResponse) => {
   const filteredReviews = reviewResponse.reviews.filter(
     (review) =>
       review.review.trim().split(' ').length > 7 && review.votes_funny < 40
   );
+
+  // Remove non alphanumeric characters from the reviews, except for punctuation
+  filteredReviews.forEach((review) => {
+    review.review = review.review.replace(/[^a-zA-Z0-9\s,.!?\-]/g, '');
+  });
 
   return { ...reviewResponse, reviews: filteredReviews };
 };
