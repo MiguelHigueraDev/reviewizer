@@ -40,16 +40,11 @@ export default function Home() {
     try {
       const reviews = await fetchAllReviews(selectedGames);
       setReviews(reviews);
-      console.log(reviews);
-
+      
       const filteredReviews = filterEmptyReviews(reviews);
       if (filteredReviews.length === 0) {
-        alert('No reviews found for selected games');
         setSummaries([]);
       } else {
-        if (filteredReviews.length !== reviews.length) {
-          alert('Some games have no reviews');
-        }
         const summaries = await fetchAllSummaries(filteredReviews);
         setSummaries(summaries);
       }
