@@ -1,11 +1,12 @@
-'use client';
+"use client";
 
-import React from 'react';
-import GameSearchResults from './GameSearchResults';
-import GameResultsSkeleton from './GameResultsSkeleton';
-import GameSearchInput from './GameSearchInput';
-import useGameSearch from './useGameSearch';
-import { GameResult } from '@/app/interfaces/GameResult';
+import React from "react";
+import GameSearchResults from "./GameSearchResults";
+import GameResultsSkeleton from "./GameResultsSkeleton";
+import GameSearchInput from "./GameSearchInput";
+import useGameSearch from "./useGameSearch";
+import { GameResult } from "@/app/interfaces/GameResult";
+import { getRandomGame } from "./randomGameList";
 
 const GameSearch = ({
   selectedGames,
@@ -26,8 +27,11 @@ const GameSearch = ({
         query={query}
         setQuery={setQuery}
         onSearch={searchGames}
+        onRandomGame={() => {
+          setQuery(getRandomGame());
+        }}
       />
-      
+
       <button
         type="button"
         className="mt-2 mb-5 p-2 bg-neutral-700 hover:bg-neutral-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
