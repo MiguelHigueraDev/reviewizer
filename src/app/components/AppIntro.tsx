@@ -1,6 +1,14 @@
 import { IconBrandGithub } from "@tabler/icons-react";
+import ModeSwitch from "./ModeSwitch";
+import { Mode } from "../interfaces/Mode";
 
-const AppIntro = () => {
+const AppIntro = ({
+  mode,
+  onChangeMode,
+}: {
+  mode: Mode;
+  onChangeMode: () => void;
+}) => {
   return (
     <div className="mb-5 mt-1">
       {/* Name and logo */}
@@ -11,18 +19,19 @@ const AppIntro = () => {
       </div>
       {/* How it works */}
       <div>
-        <p>
-          Search up to <strong>3</strong> Steam games you are interested in to
-          get an AI summary of their reviews!
-        </p>
-        <a
-          href="https://github.com/MiguelHigueraDev/reviewizer"
-          className="flex gap-1 text-sm items-center mt-2 text-neutral-400 hover:text-neutral-300"
-          target="_blank"
-        >
-          <IconBrandGithub width={18} height={18} />
-          Source code!
-        </a>
+        <ModeSwitch mode={mode} onChangeMode={onChangeMode} />
+        {mode === Mode.Summary ? (
+          <p className="text-md px-4 py-2">
+            Search up to <strong>3</strong> Steam games you are interested in,
+            the AI will provide you with a summary of each.
+          </p>
+        ) : (
+          <p className="text-md px-4 py-2">
+            Search up to <strong>3</strong> Steam games you are interested in.
+            Enter a prompt describing what you are looking for and the AI will
+            choose the best game for you.
+          </p>
+        )}
       </div>
     </div>
   );

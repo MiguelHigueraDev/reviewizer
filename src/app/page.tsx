@@ -1,18 +1,18 @@
-'use client';
+"use client";
 
-import GameSearch from './components/GameSearch/GameSearch';
-import { useRef, useState } from 'react';
-import { GameResult } from './interfaces/GameResult';
-import SelectedGamesModal from './components/SelectedGames/SelectedGamesModal';
-import AppIntro from './components/AppIntro';
-import SummaryList from './components/SummarySection/SummaryList';
-import { fetchAiSummary, fetchReviews } from './utils/dataFetching';
-import { ReviewList } from './interfaces/ReviewList';
-import GetReviewsButton from './components/SummarySection/GetReviewsButton';
-import SelectedGamesModalButton from './components/SelectedGames/SelectedGamesModalButton';
-import { SummaryResponse } from './interfaces/SummaryResponse';
-import SummaryListSkeleton from './components/SummarySection/SummaryListSkeleton';
-import Disclaimer from './components/Disclaimer';
+import GameSearch from "./components/GameSearch/GameSearch";
+import { useRef, useState } from "react";
+import { GameResult } from "./interfaces/GameResult";
+import SelectedGamesModal from "./components/SelectedGames/SelectedGamesModal";
+import AppIntro from "./components/AppIntro";
+import SummaryList from "./components/SummarySection/SummaryList";
+import { fetchAiSummary, fetchReviews } from "./utils/dataFetching";
+import { ReviewList } from "./interfaces/ReviewList";
+import GetReviewsButton from "./components/SummarySection/GetReviewsButton";
+import SelectedGamesModalButton from "./components/SelectedGames/SelectedGamesModalButton";
+import { SummaryResponse } from "./interfaces/SummaryResponse";
+import SummaryListSkeleton from "./components/SummarySection/SummaryListSkeleton";
+import { Mode } from "./interfaces/Mode";
 
 export default function Home() {
   const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
@@ -20,6 +20,7 @@ export default function Home() {
   const [_, setReviews] = useState([] as ReviewList[]);
   const [isSelectedModalVisible, setIsSelectedModalVisible] = useState(false);
   const [summariesLoading, setSummariesLoading] = useState(false);
+  const [mode, setMode] = useState(Mode.Summary);
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -34,13 +35,17 @@ export default function Home() {
     setSelectedGames(selectedGames.filter((g) => game.appId !== g.appId));
   };
 
+  const handleChangeMode = () => {
+    setMode(mode === Mode.Summary ? Mode.Judge : Mode.Summary);
+  };
+
   const handleGetReviews = async () => {
     setSummariesLoading(true);
     scrollToBottom();
     try {
       const reviews = await fetchAllReviews(selectedGames);
       setReviews(reviews);
-      
+
       const filteredReviews = filterEmptyReviews(reviews);
       if (filteredReviews.length === 0) {
         setSummaries([]);
@@ -49,8 +54,8 @@ export default function Home() {
         setSummaries(summaries);
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
-      alert('Error fetching reviews or AI summaries.');
+      console.error("Error fetching data:", error);
+      alert("Error fetching reviews or AI summaries.");
     } finally {
       setSummariesLoading(false);
     }
@@ -71,22 +76,22 @@ export default function Home() {
   const fetchAllSummaries = async (reviews: ReviewList[]) => {
     const summaryPromises = reviews.map(async (review) => {
       try {
-        if (review.reviews.length === 0) throw new Error('No reviews found');
-        
+        if (review.reviews.length === 0) throw new Error("No reviews found");
+
         const summary = await fetchAiSummary(
-          review.reviews.map((r) => r.review).join('\n'),
+          review.reviews.map((r) => r.review).join("\n"),
           review.title
         );
 
         try {
           return JSON.parse(summary);
         } catch {
-          throw new Error('Error parsing JSON')
+          throw new Error("Error parsing JSON");
         }
       } catch (error) {
         return {
           title: review.title,
-          summary: '[ERROR]',
+          summary: "[ERROR]",
           positive: [],
           negative: [],
           error,
@@ -106,8 +111,8 @@ export default function Home() {
   const scrollToBottom = () => {
     setTimeout(() => {
       containerRef.current?.scrollIntoView({
-        behavior: 'smooth',
-        block: 'end',
+        behavior: "smooth",
+        block: "end",
       });
     }, 1500);
   };
@@ -118,7 +123,7 @@ export default function Home() {
       className="lg:flex min-h-screen items-center max-w-7xl mx-auto gap-10 justify-center p-4 md:p-16"
     >
       <div className="lg:w-1/2">
-        <AppIntro />
+        <AppIntro mode={mode} onChangeMode={handleChangeMode} />
         <GameSearch
           selectedGames={selectedGames}
           onAddGame={handleAddGame}
