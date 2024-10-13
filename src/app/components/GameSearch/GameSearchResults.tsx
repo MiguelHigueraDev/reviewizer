@@ -1,6 +1,6 @@
-import { GameResult } from '@/app/interfaces/GameResult';
-import { IconForbid, IconMinus, IconPlus } from '@tabler/icons-react';
-import React from 'react';
+import { GameResult } from "@/app/interfaces/GameResult";
+import { IconForbid, IconMinus, IconPlus } from "@tabler/icons-react";
+import React from "react";
 
 const GameSearchResults = ({
   results,
@@ -13,7 +13,6 @@ const GameSearchResults = ({
   onAddGame: (game: GameResult) => void;
   onRemoveGame: (game: GameResult) => void;
 }) => {
-
   if (results.length < 1) {
     return <p className="text-neutral-300">No results found.</p>;
   }
@@ -43,16 +42,20 @@ const GameSearchResults = ({
           </div>
 
           {/* Disable button if game is unreleased */}
-          {!Date.parse(game.releaseDate) || Date.parse(game.releaseDate) > Date.now() ? (
-            <button className="p-1.5 rounded-md transition-colors duration-100 bg-neutral-800 hover:bg-neutral-700 opacity-50" disabled>
+          {!Date.parse(game.releaseDate) ||
+          Date.parse(game.releaseDate) > Date.now() ? (
+            <button
+              className="p-1.5 rounded-md transition-colors duration-100 bg-neutral-800 hover:bg-neutral-700 opacity-50 cursor-not-allowed"
+              disabled
+            >
               <IconForbid />
             </button>
           ) : (
             <button
               className={`p-1.5 ${
                 selectedGames.some((g) => g.appId === game.appId)
-                  ? 'bg-red-600 hover:bg-red-500'
-                  : 'bg-neutral-800 hover:bg-neutral-700'
+                  ? "bg-red-600 hover:bg-red-500"
+                  : "bg-neutral-800 hover:bg-neutral-700"
               } rounded-md transition-colors duration-100`}
               onClick={() =>
                 selectedGames.some((g) => g.appId === game.appId)
@@ -61,8 +64,8 @@ const GameSearchResults = ({
               }
               aria-label={
                 selectedGames.some((g) => g.appId === game.appId)
-                  ? 'Remove game from selected games'
-                  : 'Add game to selected games'
+                  ? "Remove game from selected games"
+                  : "Add game to selected games"
               }
             >
               {selectedGames.some((g) => g.appId === game.appId) ? (

@@ -1,8 +1,8 @@
-'use client';
-import { SummaryResponse } from '@/app/interfaces/SummaryResponse';
-import { useState } from 'react';
-import SummaryButtons from './SummaryButtons';
-import SummaryError from './SummaryError';
+"use client";
+import { SummaryResponse } from "@/app/interfaces/SummaryResponse";
+import { useState } from "react";
+import SummaryButtons from "./SummaryButtons";
+import SummaryError from "./SummaryError";
 
 const SummaryList = ({ summaries }: { summaries: SummaryResponse[] }) => {
   const [currentSummaryIndex, setCurrentSummaryIndex] = useState(0);
@@ -26,26 +26,26 @@ const SummaryList = ({ summaries }: { summaries: SummaryResponse[] }) => {
             {summaries[currentSummaryIndex].positive.length < 1 ? (
               <p className="mb-2">No positives found.</p>
             ) : (
-              <ol className="list-disc ml-6 mb-2">
+              <ul className="list-disc ml-6 mb-2">
                 {summaries[currentSummaryIndex].positive.map(
                   (positive, index) => (
                     <li key={index}>{positive}</li>
                   )
                 )}
-              </ol>
+              </ul>
             )}
 
             <h4 className="font-semibold text-lg mb-2">Negatives:</h4>
             {summaries[currentSummaryIndex].negative.length < 1 ? (
               <p className="mb-2">No negatives found.</p>
             ) : (
-              <ol className="list-disc ml-6">
+              <ul className="list-disc ml-6">
                 {summaries[currentSummaryIndex].negative.map(
                   (negative, index) => (
                     <li key={index}>{negative}</li>
                   )
                 )}
-              </ol>
+              </ul>
             )}
           </div>
         )}
