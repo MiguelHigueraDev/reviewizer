@@ -21,7 +21,7 @@ export const fetchReviews = async (
 ): Promise<ReviewResponse> => {
   try {
     const response = await fetch(
-      `${REVIEWS_URL}${appId}?use_review_quality=0&cursor=*&day_range=30&start_date=-1&end_date=-1&date_range_type=all&filter=summary&language=english&l=english&review_type=all&purchase_type=all&playtime_filter_min=0&playtime_filter_max=0&filter_offtopic_activity=1&summary_num_positive_reviews=30&summary_num_reviews=15&json=1`
+      `${REVIEWS_URL}${appId}?use_review_quality=1&cursor=*&day_range=30&start_date=-1&end_date=-1&date_range_type=all&filter=summary&language=english&l=english&review_type=all&purchase_type=all&playtime_filter_min=0&playtime_filter_max=0&filter_offtopic_activity=1&summary_num_positive_reviews=30&summary_num_reviews=15&json=1`
     );
     if (!response.ok) throw new Error('Failed to fetch reviews');
 

@@ -9,7 +9,7 @@ export const randomGameList = [
   "Half-Life",
   "Grand Theft Auto",
   "Deep Rock Galactic",
-  "Skyrim",
+  "The Elder Scrolls",
   "Fallout",
   "Borderlands",
   "Risk of Rain",
