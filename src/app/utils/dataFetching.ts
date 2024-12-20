@@ -117,7 +117,10 @@ export const fetchAiSummary = async (
   try {
     const result = await model.generateContent(prompt);
     const output = result.response.text();
-    return output;
+    // Remove markdown JSON formatting
+    const startIndex = output.indexOf("{");
+    const endIndex = output.lastIndexOf("}");
+    return output.slice(startIndex, endIndex + 1);
   } catch (error) {
     console.error("Error fetching AI summary:", error);
     throw error;
