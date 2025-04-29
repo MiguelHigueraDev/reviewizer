@@ -15,9 +15,9 @@ import SummaryListSkeleton from './components/SummarySection/SummaryListSkeleton
 import Disclaimer from './components/Disclaimer';
 
 export default function Home() {
-  const [selectedGames, setSelectedGames] = useState([] as GameResult[]);
-  const [summaries, setSummaries] = useState([] as SummaryResponse[]);
-  const [_, setReviews] = useState([] as ReviewList[]);
+  const [selectedGames, setSelectedGames] = useState<GameResult[]>([]);
+  const [summaries, setSummaries] = useState<SummaryResponse[]>([]);
+  const [_, setReviews] = useState<ReviewList[]>([]);
   const [isSelectedModalVisible, setIsSelectedModalVisible] = useState(false);
   const [summariesLoading, setSummariesLoading] = useState(false);
 
