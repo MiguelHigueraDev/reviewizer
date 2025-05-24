@@ -12,9 +12,9 @@ export const metadata: Metadata = {
   authors: [
     {
       name: "Miguel Higuera",
-      url: "https://miguelhiguera.dev/"
-    }
-  ]
+      url: "https://miguelhiguera.dev/",
+    },
+  ],
 };
 
 export default function RootLayout({
@@ -23,9 +23,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <Analytics />
-      <body className={`${inter.className} bg-neutral-900 text-white`}>{children}</body>
+      <body className={`${inter.className} bg-neutral-900 text-white`}>
+        {children}
+      </body>
     </html>
   );
 }
