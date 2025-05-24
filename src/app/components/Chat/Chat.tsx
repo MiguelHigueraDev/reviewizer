@@ -7,10 +7,9 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { IconWand, IconInfoCircle } from "@tabler/icons-react";
+import { IconWand } from "@tabler/icons-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useEffect, useState, useRef } from "react";
 import { useChatStore } from "@/app/stores/chatStore";
 import { useReviewStore } from "@/app/stores/reviewStore";
@@ -111,14 +110,35 @@ const Chat = () => {
         </div>
         <SheetFooter className="mt-auto">
           <div className="flex flex-col w-full items-center space-y-3">
-            <Alert>
-              <IconInfoCircle className="h-4 w-4" />
-              <AlertTitle>Context all the way!</AlertTitle>
-              <AlertDescription>
-                The reviews from the current page are automatically included as
-                context for the AI.
-              </AlertDescription>
-            </Alert>
+            <div className="flex w-full gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setInputValue("Pick one for me!");
+                }}
+              >
+                Pick one for me!
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setInputValue("Do I need a friend to enjoy them?");
+                }}
+              >
+                Do I need a friend to enjoy them?
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setInputValue("Are they well optimized?");
+                }}
+              >
+                Are they well optimized?
+              </Button>
+            </div>
             <Textarea
               placeholder="Type your message here..."
               className="flex-grow resize-none w-full"
