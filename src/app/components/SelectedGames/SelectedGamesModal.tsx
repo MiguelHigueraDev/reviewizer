@@ -1,4 +1,3 @@
-import { useState } from "react";
 import SelectedGamesList from "./SelectedGamesList";
 import { GameResult } from "@/app/utils/types";
 
@@ -25,7 +24,7 @@ const SelectedGamesModal = ({
 
       {/* The actual modal */}
       {isVisible && (
-        <div className="fixed top-0 right-0 md:top-4 md:right-4 z-50 bg-neutral-800 p-4 rounded-t-xl md:rounded-md">
+        <div className="fixed top-4 right-4 z-50 bg-neutral-800 p-4 rounded-xl">
           <SelectedGamesList
             selectedGames={selectedGames}
             onRemoveGame={onRemoveGame}
