@@ -130,3 +130,55 @@ export const fetchAiSummary = async (
     throw error;
   }
 };
+
+export const fetchAiChatResponse = async (
+  chatHistory: { role: "user" | "assistant"; content: string }[],
+  summaries: {
+    title: string;
+    summary: string;
+    positive: string[];
+    negative: string[];
+  }[]
+): Promise<string> => {
+  const summariesText = summaries
+    .map(
+      (s) =>
+        `Game: ${s.title}\\nSummary: ${
+          s.summary
+        }\\nPositive Points: ${s.positive.join(
+          ", "
+        )}\\nNegative Points: ${s.negative.join(", ")}`
+    )
+    .join("\\n\\n");
+
+  const historyText = chatHistory
+    .map((message) => `${message.role}: ${message.content}`)
+    .join("\\n");
+
+  const prompt = `You are a helpful assistant knowledgeable about video games.
+The user has provided summaries for the following games:
+${summariesText}
+
+Continue the conversation based on these summaries and the chat history below.
+If asked about other games not in the summary, do your best to answer based on your knowledge.
+Keep your answers concise and helpful.
+Only answer questions related to video games.
+Do not answer any other questions.
+
+Chat History:
+${historyText}
+assistant:`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+    });
+    const output = response.text;
+    if (!output) throw new Error("No output from AI");
+    return output.trim();
+  } catch (error) {
+    console.error("Error fetching AI chat response:", error);
+    throw error;
+  }
+};
