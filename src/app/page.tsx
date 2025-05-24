@@ -11,6 +11,7 @@ import SelectedGamesModalButton from "./components/SelectedGames/SelectedGamesMo
 import SummaryListSkeleton from "./components/SummarySection/SummaryListSkeleton";
 import { GameResult, ReviewList, SummaryResponse } from "./utils/types";
 import { useReviewStore } from "./stores/reviewStore";
+import Chat from "./components/Chat/Chat";
 
 export default function Home() {
   const {
@@ -107,7 +108,7 @@ export default function Home() {
   return (
     <main
       ref={containerRef}
-      className="lg:flex min-h-screen items-center max-w-7xl mx-auto gap-10 justify-center p-4 md:p-16"
+      className="lg:flex dark min-h-screen items-center max-w-7xl mx-auto gap-10 justify-center p-4 md:p-16"
     >
       <div className="lg:w-1/2">
         <AppIntro />
@@ -129,7 +130,10 @@ export default function Home() {
         {summariesLoading ? (
           <SummaryListSkeleton />
         ) : (
-          <SummaryList summaries={summaries} />
+          <>
+            <SummaryList summaries={summaries} />
+            {summaries.length > 0 && <Chat />}
+          </>
         )}
       </div>
 
