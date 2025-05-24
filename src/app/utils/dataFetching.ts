@@ -1,8 +1,8 @@
 "use server";
 
 import * as cheerio from "cheerio";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { GameResult, ReviewResponse } from "./types";
+import { GoogleGenAI } from "@google/genai";
 
 const REVIEWS_URL = "https://store.steampowered.com/appreviews/";
 // Category 998 is for games only
@@ -11,8 +11,9 @@ const SEARCH_GAME_URL =
 
 const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
 if (!GOOGLE_AI_KEY) throw new Error("Missing Google AI key");
-const genAI = new GoogleGenerativeAI(GOOGLE_AI_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+const ai = new GoogleGenAI({
+  apiKey: GOOGLE_AI_KEY,
+});
 
 export const fetchReviews = async (
   appId: string,
@@ -49,7 +50,7 @@ const filterReviews = async (reviewResponse: ReviewResponse) => {
 
   // Remove non alphanumeric characters from the reviews, except for punctuation
   filteredReviews.forEach((review) => {
-    review.review = review.review.replace(/[^a-zA-Z0-9\s,.!?\-]/g, "");
+    review.review = review.review.replace(/[^a-zA-Z0-9\s,.!?-]/g, "");
   });
 
   return { ...reviewResponse, reviews: filteredReviews };
@@ -114,8 +115,12 @@ export const fetchAiSummary = async (
   ${text}`;
 
   try {
-    const result = await model.generateContent(prompt);
-    const output = result.response.text();
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
+    const output = response.text;
+    if (!output) throw new Error("No output from AI");
     // Remove markdown JSON formatting
     const startIndex = output.indexOf("{");
     const endIndex = output.lastIndexOf("}");
