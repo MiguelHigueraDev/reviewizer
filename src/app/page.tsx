@@ -10,26 +10,21 @@ import GetReviewsButton from "./components/SummarySection/GetReviewsButton";
 import SelectedGamesModalButton from "./components/SelectedGames/SelectedGamesModalButton";
 import SummaryListSkeleton from "./components/SummarySection/SummaryListSkeleton";
 import { GameResult, ReviewList, SummaryResponse } from "./utils/types";
+import { useReviewStore } from "./stores/reviewStore";
 
 export default function Home() {
-  const [selectedGames, setSelectedGames] = useState<GameResult[]>([]);
-  const [summaries, setSummaries] = useState<SummaryResponse[]>([]);
-  const [_, setReviews] = useState<ReviewList[]>([]);
+  const {
+    selectedGames,
+    addGame,
+    removeGame,
+    summaries,
+    setSummaries,
+    setReviews,
+  } = useReviewStore();
   const [isSelectedModalVisible, setIsSelectedModalVisible] = useState(false);
   const [summariesLoading, setSummariesLoading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const handleAddGame = (game: GameResult) => {
-    if (selectedGames.length >= 3) return;
-    if (selectedGames.find((selectedGame) => selectedGame.appId === game.appId))
-      return;
-    setSelectedGames([...selectedGames, game]);
-  };
-
-  const handleRemoveGame = (game: GameResult) => {
-    setSelectedGames(selectedGames.filter((g) => game.appId !== g.appId));
-  };
 
   const handleGetReviews = async () => {
     setSummariesLoading(true);
@@ -118,8 +113,8 @@ export default function Home() {
         <AppIntro />
         <GameSearch
           selectedGames={selectedGames}
-          onAddGame={handleAddGame}
-          onRemoveGame={handleRemoveGame}
+          onAddGame={addGame}
+          onRemoveGame={removeGame}
         />
         <GetReviewsButton
           selectedGames={selectedGames}
@@ -149,7 +144,7 @@ export default function Home() {
       <SelectedGamesModal
         isVisible={isSelectedModalVisible}
         selectedGames={selectedGames}
-        onRemoveGame={handleRemoveGame}
+        onRemoveGame={removeGame}
         onToggleVisibility={() =>
           setIsSelectedModalVisible(!isSelectedModalVisible)
         }
