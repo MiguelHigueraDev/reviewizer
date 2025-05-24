@@ -18,7 +18,7 @@ import { fetchAiChatResponse } from "@/app/utils/dataFetching";
 import Markdown from "marked-react";
 
 const Chat = () => {
-  const { chatHistory, addMessage, clearChat } = useChatStore();
+  const { chatHistory, addMessage } = useChatStore();
   const { summaries } = useReviewStore();
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -65,7 +65,7 @@ const Chat = () => {
   }, [chatHistory]);
 
   return (
-    <Sheet onOpenChange={(open) => !open && clearChat()}>
+    <Sheet>
       <SheetTrigger asChild>
         <button className="flex items-center justify-center gap-2 w-full p-2 mt-4 bg-neutral-700 hover:bg-neutral-600 active:bg-neutral-500 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
           <IconWand /> Chat with AI
