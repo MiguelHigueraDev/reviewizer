@@ -1,5 +1,4 @@
-import { GameResult } from '@/app/interfaces/GameResult';
-import React from 'react';
+import { GameResult } from "@/app/utils/types";
 
 const SelectedGamesModalButton = ({
   selectedGames,

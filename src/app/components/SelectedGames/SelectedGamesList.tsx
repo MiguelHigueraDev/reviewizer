@@ -1,6 +1,6 @@
-import React from 'react';
-import { GameResult } from '../../interfaces/GameResult';
-import { IconMinus } from '@tabler/icons-react';
+import React from "react";
+import { IconMinus } from "@tabler/icons-react";
+import { GameResult } from "@/app/utils/types";
 
 const SelectedGamesList = ({
   selectedGames,
