@@ -15,6 +15,7 @@ import { useEffect, useState, useRef } from "react";
 import { useChatStore } from "@/app/stores/chatStore";
 import { useReviewStore } from "@/app/stores/reviewStore";
 import { fetchAiChatResponse } from "@/app/utils/dataFetching";
+import Markdown from "marked-react";
 
 const Chat = () => {
   const { chatHistory, addMessage, clearChat } = useChatStore();
@@ -96,7 +97,7 @@ const Chat = () => {
                     : "bg-gray-200 text-gray-800"
                 }`}
               >
-                {message.content}
+                <Markdown>{message.content}</Markdown>
               </div>
             </div>
           ))}
