@@ -5,8 +5,8 @@ import GameSearchResults from "./GameSearchResults";
 import GameResultsSkeleton from "./GameResultsSkeleton";
 import GameSearchInput from "./GameSearchInput";
 import useGameSearch from "./useGameSearch";
-import { GameResult } from "@/app/interfaces/GameResult";
 import { getRandomGame } from "./randomGameList";
+import { GameResult } from "@/app/utils/types";
 
 const GameSearch = ({
   selectedGames,

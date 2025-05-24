@@ -19,6 +19,7 @@ const AppIntro = () => {
           href="https://github.com/MiguelHigueraDev/reviewizer"
           className="flex gap-1 text-sm items-center mt-2 text-neutral-400 hover:text-neutral-300"
           target="_blank"
+          rel="noreferrer"
         >
           <IconBrandGithub width={18} height={18} />
           Source code!

@@ -1,9 +1,9 @@
 import { useState, useCallback } from "react";
 import { fetchGames } from "../../utils/dataFetching";
-import { GameResult } from "@/app/interfaces/GameResult";
+import { GameResult } from "@/app/utils/types";
 
 const useGameSearch = () => {
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState("");
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [gameResults, setGameResults] = useState<GameResult[]>([]);
 

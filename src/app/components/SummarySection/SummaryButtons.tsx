@@ -1,6 +1,6 @@
-import React from 'react';
-import { IconArrowLeft, IconArrowRight } from '@tabler/icons-react';
-import { SummaryResponse } from '@/app/interfaces/SummaryResponse';
+import React from "react";
+import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
+import { SummaryResponse } from "@/app/utils/types";
 
 const SummaryButtons = ({
   summaries,

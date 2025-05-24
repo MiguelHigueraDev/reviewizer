@@ -2,12 +2,16 @@ const Disclaimer = () => {
   return (
     <div className="mt-4">
       <p className="text-xs mb-2">
-        ⚠️ Games with low amount of reviews or high count of
-        inappropiate reviews may cause errors.
+        ⚠️ Games with low amount of reviews or high count of inappropiate
+        reviews may cause errors.
       </p>
       <p className="text-xs">
-        Made by{' '}
-        <a href="https://github.com/MiguelHigueraDev/" target="_blank">
+        Made by{" "}
+        <a
+          href="https://github.com/MiguelHigueraDev/"
+          target="_blank"
+          rel="noreferrer"
+        >
           MiguelHigueraDev
         </a>
       </p>

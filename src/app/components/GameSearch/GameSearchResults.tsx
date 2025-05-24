@@ -1,6 +1,5 @@
-import { GameResult } from "@/app/interfaces/GameResult";
+import { GameResult } from "@/app/utils/types";
 import { IconForbid, IconMinus, IconPlus } from "@tabler/icons-react";
-import React from "react";
 
 const GameSearchResults = ({
   results,

@@ -1,9 +1,8 @@
 "use server";
 
 import * as cheerio from "cheerio";
-import { ReviewResponse } from "@/app/interfaces/ReviewResponse";
-import { GameResult } from "@/app/interfaces/GameResult";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GameResult, ReviewResponse } from "./types";
 
 const REVIEWS_URL = "https://store.steampowered.com/appreviews/";
 // Category 998 is for games only

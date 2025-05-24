@@ -1,8 +1,8 @@
 "use client";
-import { SummaryResponse } from "@/app/interfaces/SummaryResponse";
 import { useState } from "react";
 import SummaryButtons from "./SummaryButtons";
 import SummaryError from "./SummaryError";
+import { SummaryResponse } from "@/app/utils/types";
 
 const SummaryList = ({ summaries }: { summaries: SummaryResponse[] }) => {
   const [currentSummaryIndex, setCurrentSummaryIndex] = useState(0);
