@@ -162,6 +162,8 @@ ${summariesText}
 Continue the conversation based on these summaries and the chat history below.
 If asked about other games not in the summary, do your best to answer based on your knowledge.
 Keep your answers concise and helpful.
+Only answer questions related to video games.
+Do not answer any other questions.
 
 Chat History:
 ${historyText}
