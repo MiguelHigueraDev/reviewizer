@@ -196,7 +196,7 @@ export const fetchAiSuggestions = async (
   You are a helpful assistant knowledgeable about video games.
   The user has provided summaries, positive and negative points for the following games:
   ${summariesText}
-  Based on these summaries, write a list of three questions that the user can ask to get more information about the games.
+  Based on these summaries, and what you know as an expert, but mainly focusing on the summaries, write a list of three questions that the user can ask to get more information about the games.
   Format the questions as a JSON array of strings, like this:
   Try to keep questions below 10 words.
   ["Question 1", "Question 2", "Question 3"]`;
