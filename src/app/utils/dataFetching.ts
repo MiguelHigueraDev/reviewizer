@@ -1,7 +1,7 @@
 "use server";
 
 import * as cheerio from "cheerio";
-import { GameResult, ReviewResponse } from "./types";
+import { GameResult, ReviewResponse, SummaryResponse } from "./types";
 import { GoogleGenAI } from "@google/genai";
 
 const REVIEWS_URL = "https://store.steampowered.com/appreviews/";
@@ -104,7 +104,7 @@ export const fetchAiSummary = async (
   Use the following JSON template for the summary.
   EXPORT RAW, MINIFIED JSON. NO MARKDOWN OR ANYTHING ELSE.
   {
-    "title": "[game title]",
+    "title": "[game title]", 
     "summary": "[review summary]",
     "positive": ["[positive points]"],
     "negative": ["[negative points]"],
@@ -133,12 +133,7 @@ export const fetchAiSummary = async (
 
 export const fetchAiChatResponse = async (
   chatHistory: { role: "user" | "assistant"; content: string }[],
-  summaries: {
-    title: string;
-    summary: string;
-    positive: string[];
-    negative: string[];
-  }[]
+  summaries: Omit<SummaryResponse, "error">[]
 ): Promise<string> => {
   const summariesText = summaries
     .map(
@@ -180,5 +175,52 @@ assistant:`;
   } catch (error) {
     console.error("Error fetching AI chat response:", error);
     throw error;
+  }
+};
+
+export const fetchAiSuggestions = async (
+  summaries: Omit<SummaryResponse, "error">[]
+): Promise<string[]> => {
+  const summariesText = summaries
+    .map(
+      (s) =>
+        `Game: ${s.title}\\nSummary: ${
+          s.summary
+        }\\nPositive Points: ${s.positive.join(
+          ", "
+        )}\\nNegative Points: ${s.negative.join(", ")}`
+    )
+    .join("\\n\\n");
+
+  const prompt = `
+  You are a helpful assistant knowledgeable about video games.
+  The user has provided summaries, positive and negative points for the following games:
+  ${summariesText}
+  Based on these summaries, write a list of three questions that the user can ask to get more information about the games.
+  Format the questions as a JSON array of strings, like this:
+  Try to keep questions below 10 words.
+  ["Question 1", "Question 2", "Question 3"]`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.0-flash",
+    contents: [{ role: "user", parts: [{ text: prompt }] }],
+  });
+
+  const output = response.text;
+  if (!output) throw new Error("No output from AI");
+
+  // Extract the JSON array from the output
+  const startIndex = output.indexOf("[");
+  const endIndex = output.lastIndexOf("]");
+  const jsonArray = output.slice(startIndex, endIndex + 1);
+  try {
+    const questions = JSON.parse(jsonArray) as string[];
+    if (!Array.isArray(questions) || questions.length !== 3) {
+      throw new Error("Invalid AI response format");
+    }
+    return questions;
+  } catch (error) {
+    console.error("Error parsing AI response:", error);
+    throw new Error("Failed to parse AI response");
   }
 };

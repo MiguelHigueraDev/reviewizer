@@ -13,12 +13,15 @@ import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
 import { useChatStore } from "@/app/stores/chatStore";
 import { useReviewStore } from "@/app/stores/reviewStore";
-import { fetchAiChatResponse } from "@/app/utils/dataFetching";
+import {
+  fetchAiChatResponse,
+  fetchAiSuggestions,
+} from "@/app/utils/dataFetching";
 import Markdown from "marked-react";
 
 const Chat = () => {
   const { chatHistory, addMessage } = useChatStore();
-  const { summaries } = useReviewStore();
+  const { summaries, suggestions, setSuggestions } = useReviewStore();
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
@@ -62,6 +65,27 @@ const Chat = () => {
         chatContainerRef.current.scrollHeight;
     }
   }, [chatHistory]);
+
+  useEffect(() => {
+    const loadSuggestions = async () => {
+      if (summaries.length > 0 && suggestions.length === 0) {
+        try {
+          const newSuggestions = await fetchAiSuggestions(summaries);
+          setSuggestions(newSuggestions);
+        } catch (error) {
+          console.error("Error fetching suggestions:", error);
+          // Fallback to default suggestions
+          setSuggestions([
+            "Pick one for me!",
+            "Do I need a friend to enjoy them?",
+            "Are they well optimized?",
+          ]);
+        }
+      }
+    };
+
+    loadSuggestions();
+  }, [summaries, suggestions.length, setSuggestions]);
 
   return (
     <Sheet>
@@ -110,34 +134,24 @@ const Chat = () => {
         </div>
         <SheetFooter className="mt-auto">
           <div className="flex flex-col w-full items-center space-y-3">
+            <div className="flex gap-2 items-center w-full">
+              <IconWand size={18} />
+              <p className="text-sm text-white">Suggestions </p>
+            </div>
+
             <div className="flex w-full gap-2 flex-wrap">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setInputValue("Pick one for me!");
-                }}
-              >
-                Pick one for me!
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setInputValue("Do I need a friend to enjoy them?");
-                }}
-              >
-                Do I need a friend to enjoy them?
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setInputValue("Are they well optimized?");
-                }}
-              >
-                Are they well optimized?
-              </Button>
+              {suggestions.map((suggestion, index) => (
+                <Button
+                  key={index}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setInputValue(suggestion);
+                  }}
+                >
+                  {suggestion}
+                </Button>
+              ))}
             </div>
             <Textarea
               placeholder="Type your message here..."

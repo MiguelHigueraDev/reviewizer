@@ -5,6 +5,7 @@ type ReviewStore = {
   selectedGames: GameResult[];
   summaries: SummaryResponse[];
   reviews: ReviewList[];
+  suggestions: string[];
 
   addGame: (game: GameResult) => void;
   removeGame: (game: GameResult) => void;
@@ -12,12 +13,14 @@ type ReviewStore = {
   setSelectedGames: (games: GameResult[]) => void;
   setSummaries: (summaries: SummaryResponse[]) => void;
   setReviews: (reviews: ReviewList[]) => void;
+  setSuggestions: (suggestions: string[]) => void;
 };
 
 export const useReviewStore = create<ReviewStore>((set) => ({
   selectedGames: [],
   summaries: [],
   reviews: [],
+  suggestions: [],
 
   addGame: (game) => {
     set((state) => {
@@ -41,4 +44,5 @@ export const useReviewStore = create<ReviewStore>((set) => ({
   setSelectedGames: (games) => set({ selectedGames: games }),
   setSummaries: (summaries) => set({ summaries }),
   setReviews: (reviews) => set({ reviews }),
+  setSuggestions: (suggestions) => set({ suggestions }),
 }));
