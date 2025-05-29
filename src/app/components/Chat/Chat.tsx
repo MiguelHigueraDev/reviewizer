@@ -1,12 +1,12 @@
 import {
-  Sheet,
-  SheetContent,
-  SheetDescription,
-  SheetFooter,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { IconWand } from "@tabler/icons-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ const Chat = () => {
   const { summaries, suggestions, setSuggestions } = useReviewStore();
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   const handleSendMessage = async () => {
@@ -88,20 +89,20 @@ const Chat = () => {
   }, [summaries, suggestions.length, setSuggestions]);
 
   return (
-    <Sheet>
-      <SheetTrigger asChild>
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
         <button className="flex items-center justify-center gap-2 w-full p-2 mt-4 bg-neutral-700 hover:bg-neutral-600 active:bg-neutral-500 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
           <IconWand /> Chat with AI
         </button>
-      </SheetTrigger>
-      <SheetContent className="flex flex-col">
-        <SheetHeader>
-          <SheetTitle>Chat with AI</SheetTitle>
-          <SheetDescription>
+      </DialogTrigger>
+      <DialogContent className="flex flex-col max-w-2xl h-[80vh]">
+        <DialogHeader>
+          <DialogTitle>Chat with AI</DialogTitle>
+          <DialogDescription>
             Ask questions about the games, specify what you value in a game, or
             just ask me to pick a game for you.
-          </SheetDescription>
-        </SheetHeader>
+          </DialogDescription>
+        </DialogHeader>
         <div
           ref={chatContainerRef}
           className="flex-grow overflow-y-auto space-y-4 px-1"
@@ -132,7 +133,7 @@ const Chat = () => {
             </div>
           )}
         </div>
-        <SheetFooter className="mt-auto">
+        <DialogFooter className="mt-auto">
           <div className="flex flex-col w-full items-center space-y-3">
             <div className="flex gap-2 items-center w-full">
               <IconWand size={18} />
@@ -176,9 +177,9 @@ const Chat = () => {
               {isLoading ? "Sending..." : "Send"}
             </Button>
           </div>
-        </SheetFooter>
-      </SheetContent>
-    </Sheet>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
