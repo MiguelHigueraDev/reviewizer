@@ -69,7 +69,7 @@ const Chat = () => {
 
   useEffect(() => {
     const loadSuggestions = async () => {
-      if (summaries.length > 0 && suggestions.length === 0) {
+      if (summaries.length > 0) {
         try {
           const newSuggestions = await fetchAiSuggestions(summaries);
           setSuggestions(newSuggestions);
@@ -86,7 +86,7 @@ const Chat = () => {
     };
 
     loadSuggestions();
-  }, [summaries, suggestions.length, setSuggestions]);
+  }, [summaries, setSuggestions]);
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
