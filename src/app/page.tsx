@@ -105,12 +105,18 @@ export default function Home() {
     }, 1500);
   };
 
+  const shouldCenterLayout = !summariesLoading && summaries.length === 0;
+
   return (
     <main
       ref={containerRef}
-      className="lg:flex dark min-h-screen items-center max-w-7xl mx-auto gap-10 justify-center p-4 md:p-16"
+      className={`dark min-h-screen max-w-7xl mx-auto p-4 md:p-16 ${
+        shouldCenterLayout
+          ? "flex items-center justify-center"
+          : "lg:flex lg:items-start lg:gap-10 lg:justify-center"
+      }`}
     >
-      <div className="lg:w-1/2">
+      <div className={`${shouldCenterLayout ? "w-full max-w-lg" : "lg:w-1/2"}`}>
         <AppIntro />
         <GameSearch
           selectedGames={selectedGames}
@@ -126,16 +132,18 @@ export default function Home() {
         <hr className="block lg:hidden w-full mt-4 border-neutral-600" />
       </div>
 
-      <div className="lg:w-1/2 self-center">
-        {summariesLoading ? (
-          <SummaryListSkeleton />
-        ) : (
-          <>
-            <SummaryList summaries={summaries} />
-            {summaries.length > 0 && <Chat />}
-          </>
-        )}
-      </div>
+      {(summariesLoading || summaries.length > 0) && (
+        <div className="lg:w-1/2 lg:self-start mt-8 lg:mt-0">
+          {summariesLoading ? (
+            <SummaryListSkeleton />
+          ) : (
+            <>
+              <SummaryList summaries={summaries} />
+              {summaries.length > 0 && <Chat />}
+            </>
+          )}
+        </div>
+      )}
 
       {/* Selected games modal and toggle button */}
       <SelectedGamesModalButton
