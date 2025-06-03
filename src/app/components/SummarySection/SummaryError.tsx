@@ -1,6 +1,6 @@
 // Returned when summary is generated, mainly because of inappropiate reviews or lack of them.
-import { IconBug } from '@tabler/icons-react';
-import React from 'react';
+import { IconBug } from "@tabler/icons-react";
+import React from "react";
 
 const SummaryError = ({ error }: { error: Error }) => {
   return (
@@ -12,10 +12,11 @@ const SummaryError = ({ error }: { error: Error }) => {
       <p>{error.message}</p>
       <p className="text-neutral-400">
         You could try generating it again, although if it&apos;s due to lack of
-        reviews or inappropiate ones, it will still fail.<br />
-        In this case, try checking out the game&apos;s reviews on Steam directly.
+        reviews or inappropriate ones, it will still fail.
+        <br />
+        In this case, try checking out the game&apos;s reviews on Steam
+        directly.
       </p>
-      
     </div>
   );
 };
