@@ -10,6 +10,8 @@ const SEARCH_GAME_URL =
   "https://store.steampowered.com/search/?category1=998&term=";
 
 const GOOGLE_AI_KEY = process.env.GOOGLE_AI_KEY;
+const AI_MODEL = "gemini-2.5-flash";
+
 if (!GOOGLE_AI_KEY) throw new Error("Missing Google AI key");
 const ai = new GoogleGenAI({
   apiKey: GOOGLE_AI_KEY,
@@ -166,7 +168,7 @@ assistant:`;
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.0-flash",
+      model: AI_MODEL,
       contents: [{ role: "user", parts: [{ text: prompt }] }],
     });
     const output = response.text;
