@@ -9,9 +9,10 @@
     "lint": "next lint"
   },
   "dependencies": {
-    "@google/genai": "^1.0.1",
+    "@google/genai": "^1.15.0",
     "@radix-ui/react-dialog": "^1.1.14",
     "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-tooltip": "^1.2.8",
     "@tabler/icons-react": "^3.10.0",
     "@vercel/analytics": "^1.3.1",
     "cheerio": "1.0.0-rc.12",
