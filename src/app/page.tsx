@@ -12,6 +12,7 @@ import SummaryListSkeleton from "./components/SummarySection/SummaryListSkeleton
 import { GameResult, ReviewList, SummaryResponse } from "./utils/types";
 import { useReviewStore } from "./stores/reviewStore";
 import Chat from "./components/Chat/Chat";
+import Comparer from "./components/Comparer/Comparer";
 
 export default function Home() {
   const {
@@ -140,6 +141,7 @@ export default function Home() {
             <>
               <SummaryList summaries={summaries} />
               {summaries.length > 0 && <Chat />}
+              {summaries.length > 1 && <Comparer />}
             </>
           )}
         </div>
