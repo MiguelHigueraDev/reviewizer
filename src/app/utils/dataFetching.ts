@@ -19,11 +19,11 @@ const ai = new GoogleGenAI({
 
 export const fetchReviews = async (
   appId: string,
-  title: string
+  title: string,
 ): Promise<ReviewResponse> => {
   try {
     const response = await fetch(
-      `${REVIEWS_URL}${appId}?use_review_quality=1&cursor=*&day_range=30&start_date=-1&end_date=-1&date_range_type=all&filter=summary&language=english&l=english&review_type=all&purchase_type=all&playtime_filter_min=0&playtime_filter_max=0&filter_offtopic_activity=1&summary_num_positive_reviews=30&summary_num_reviews=15&json=1`
+      `${REVIEWS_URL}${appId}?use_review_quality=1&cursor=*&day_range=30&start_date=-1&end_date=-1&date_range_type=all&filter=summary&language=english&l=english&review_type=all&purchase_type=all&playtime_filter_min=0&playtime_filter_max=0&filter_offtopic_activity=1&summary_num_positive_reviews=30&summary_num_reviews=15&json=1`,
     );
     if (!response.ok) throw new Error("Failed to fetch reviews");
 
@@ -47,7 +47,7 @@ export const fetchReviews = async (
 const filterReviews = async (reviewResponse: ReviewResponse) => {
   const filteredReviews = reviewResponse.reviews.filter(
     (review) =>
-      review.review.trim().split(" ").length > 7 && review.votes_funny < 40
+      review.review.trim().split(" ").length > 7 && review.votes_funny < 40,
   );
 
   // Remove non alphanumeric characters from the reviews, except for punctuation
@@ -97,23 +97,23 @@ const extractGameList = (html: string): GameResult[] => {
 
 export const fetchAiSummary = async (
   text: string,
-  title: string
+  title: string,
 ): Promise<string> => {
-  const prompt = `Summarize the following reviews. 
-  Each review is separated by a line break. 
-  Ignore any irrelevant reviews like ASCII art or jokes. 
+  const prompt = `Summarize the following reviews.
+  Each review is separated by a line break.
+  Ignore any irrelevant reviews like ASCII art or jokes.
   Besides the summary, enumerate at most five positive and negative points about the games.
   Use the following JSON template for the summary.
   EXPORT RAW, MINIFIED JSON. NO MARKDOWN OR ANYTHING ELSE.
   {
-    "title": "[game title]", 
+    "title": "[game title]",
     "summary": "[review summary]",
     "positive": ["[positive points]"],
     "negative": ["[negative points]"],
   }
   Game title:
   ${title}
-  Review list: 
+  Review list:
   ${text}`;
 
   try {
@@ -135,7 +135,7 @@ export const fetchAiSummary = async (
 
 export const fetchAiChatResponse = async (
   chatHistory: { role: "user" | "assistant"; content: string }[],
-  summaries: Omit<SummaryResponse, "error">[]
+  summaries: Omit<SummaryResponse, "error">[],
 ): Promise<string> => {
   const summariesText = summaries
     .map(
@@ -143,8 +143,8 @@ export const fetchAiChatResponse = async (
         `Game: ${s.title}\\nSummary: ${
           s.summary
         }\\nPositive Points: ${s.positive.join(
-          ", "
-        )}\\nNegative Points: ${s.negative.join(", ")}`
+          ", ",
+        )}\\nNegative Points: ${s.negative.join(", ")}`,
     )
     .join("\\n\\n");
 
@@ -181,7 +181,7 @@ assistant:`;
 };
 
 export const fetchAiSuggestions = async (
-  summaries: Omit<SummaryResponse, "error">[]
+  summaries: Omit<SummaryResponse, "error">[],
 ): Promise<string[]> => {
   const summariesText = summaries
     .map(
@@ -189,8 +189,8 @@ export const fetchAiSuggestions = async (
         `Game: ${s.title}\\nSummary: ${
           s.summary
         }\\nPositive Points: ${s.positive.join(
-          ", "
-        )}\\nNegative Points: ${s.negative.join(", ")}`
+          ", ",
+        )}\\nNegative Points: ${s.negative.join(", ")}`,
     )
     .join("\\n\\n");
 
@@ -224,5 +224,66 @@ export const fetchAiSuggestions = async (
   } catch (error) {
     console.error("Error parsing AI response:", error);
     throw new Error("Failed to parse AI response");
+  }
+};
+
+export const fetchAiRecommendation = async (
+  summaries: Omit<SummaryResponse, "error">[],
+  preferences: Record<string, number>,
+): Promise<string> => {
+  const summariesText = summaries
+    .map(
+      (s) =>
+        `Game: ${s.title}\nSummary: ${
+          s.summary
+        }\nPositive Points: ${s.positive.join(", ")}\nNegative Points: ${s.negative.join(
+          ", ",
+        )}`,
+    )
+    .join("\n\n");
+
+  const preferencesText = Object.entries(preferences)
+    .map(([k, v]) => `${k}: ${v}`)
+    .join(", ");
+
+  const prompt = `You are helping a user choose the single best game for them.
+You are given a list of games with a short summary plus positive and negative points compiled from reviews.
+You are also given the user's weighted preferences across categories (0–3 each, total budget up to 15): Graphics, Story, Gameplay, Music, Challenge, Replayability, Progression, Value for Money.
+
+Instructions:
+- Base your recommendation primarily on the provided summaries/points.
+- Use the category weights to decide which aspects matter most.
+- IMPORTANT: Only consider weights that are greater than 0. Don't make up selections.
+- If there is a tie, prefer the game with fewer critical negatives or broader appeal given the weights.
+- Only choose a title that exists in the provided list.
+
+Return STRICTLY minified JSON (no markdown) in this exact shape:
+{"recommended":"[exact game title]","rationale":"[<=120 words, concise reasoning referencing the top weighted categories]","ranking":[{"title":"[title]","score":N}...]}
+Where ranking is ordered best-to-worst and includes all provided games, with integer scores from 0–100.
+
+Games:
+${summariesText}
+
+User Preferences (weights): ${preferencesText}`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: AI_MODEL,
+      contents: [{ role: "user", parts: [{ text: prompt }] }],
+    });
+
+    const output = response.text;
+    if (!output) throw new Error("No output from AI");
+
+    // Remove JSON blob in case it's genereated.
+    const startIndex = output.indexOf("{");
+    const endIndex = output.lastIndexOf("}");
+    if (startIndex === -1 || endIndex === -1) {
+      throw new Error("Failed to extract JSON from AI output");
+    }
+    return output.slice(startIndex, endIndex + 1);
+  } catch (error) {
+    console.error("Error fetching AI recommendation:", error);
+    throw error;
   }
 };
