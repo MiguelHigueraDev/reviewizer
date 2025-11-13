@@ -1,22 +1,25 @@
 const GameResultsSkeleton = () => {
   return (
-    <ol className="flex gap-2 flex-col w-full">
+    <div className="flex gap-3 flex-col w-full animate-pulse">
       {Array.from({ length: 10 }).map((_, index) => (
-        <li key={index} className="flex gap-3 items-center">
-          {/* Image */}
-          <div className="bg-gray-400 animate-pulse w-[120px] h-[45px]" />
+        <div
+          key={index}
+          className="flex gap-3 items-center p-3 rounded-lg border border-border bg-card"
+        >
+          {/* Image skeleton */}
+          <div className="w-[120px] h-[45px] flex-shrink-0 rounded overflow-hidden bg-muted" />
 
-          {/* Game text */}
-          <div className="flex flex-col gap-2.5 animate-pulse flex-grow">
-            <div className="h-3 w-[230px] bg-gray-400" />
-            <div className="h-3 w-[150px] bg-gray-400" />
+          {/* Game info skeleton */}
+          <div className="flex-grow min-w-0 space-y-2">
+            <div className="h-4 w-3/4 bg-muted rounded-md" />
+            <div className="h-3 w-1/2 bg-muted rounded-md" />
           </div>
 
-          {/* Button */}
-          <div className="bg-gray-400 animate-pulse w-[36px] h-[36px] rounded-lg"></div>
-        </li>
+          {/* Button skeleton */}
+          <div className="flex-shrink-0 h-9 w-9 bg-muted rounded-md" />
+        </div>
       ))}
-    </ol>
+    </div>
   );
 };
 

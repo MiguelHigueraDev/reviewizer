@@ -1,4 +1,6 @@
 import { GameResult } from "@/app/utils/types";
+import { Button } from "@/components/ui/button";
+import { Sparkles, Loader2 } from "lucide-react";
 
 const GetReviewsButton = ({
   selectedGames,
@@ -9,23 +11,29 @@ const GetReviewsButton = ({
   onClick: () => void;
   isLoading: boolean;
 }) => {
-  return selectedGames.length > 0 ? (
-    <button
+  return (
+    <Button
       type="button"
       onClick={onClick}
-      className="mt-4 mb-2 md:mb-0 p-2 bg-blue-700 hover:bg-blue-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-      disabled={isLoading}
+      className="mt-6 mb-2 md:mb-0 w-full"
+      size="lg"
+      disabled={isLoading || selectedGames.length === 0}
     >
-      Get reviews for {selectedGames.length}{" "}
-      {selectedGames.length === 1 ? "game" : "games"}
-    </button>
-  ) : (
-    <button
-      className="mt-4 mb-2 md:mb-0 p-2 bg-blue-700 hover:bg-blue-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-      disabled
-    >
-      Select at least one game
-    </button>
+      {isLoading ? (
+        <>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          Generating summaries...
+        </>
+      ) : selectedGames.length > 0 ? (
+        <>
+          <Sparkles className="h-4 w-4" />
+          Get AI reviews for {selectedGames.length}{" "}
+          {selectedGames.length === 1 ? "game" : "games"}
+        </>
+      ) : (
+        <>Select at least one game</>
+      )}
+    </Button>
   );
 };
 

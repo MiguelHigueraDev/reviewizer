@@ -21,25 +21,18 @@ const GameSearch = ({
     useGameSearch();
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <h2 className="w-full mb-2">Search for Steam games</h2>
-      <GameSearchInput
-        query={query}
-        setQuery={setQuery}
-        onSearch={searchGames}
-        onRandomGame={() => {
-          setQuery(getRandomGame());
-        }}
-      />
-
-      <button
-        type="button"
-        className="mt-2 mb-5 p-2 bg-neutral-700 hover:bg-neutral-600 transition-colors duration-100 w-full rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
-        onClick={searchGames}
-        disabled={query.length < 1 || isLoading}
-      >
-        Search games
-      </button>
+    <div className="flex flex-col w-full space-y-4">
+      <div>
+        <h2 className="text-xl font-semibold mb-3">Search for Steam games</h2>
+        <GameSearchInput
+          query={query}
+          setQuery={setQuery}
+          onSearch={searchGames}
+          onRandomGame={() => {
+            setQuery(getRandomGame());
+          }}
+        />
+      </div>
 
       {isLoading ? (
         <GameResultsSkeleton />

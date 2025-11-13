@@ -7,7 +7,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { IconWand } from "@tabler/icons-react";
+import { MessageCircle, Sparkles, Send } from "lucide-react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState, useRef } from "react";
@@ -91,22 +91,36 @@ const Chat = () => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <button className="flex items-center justify-center gap-2 w-full p-2 mt-4 bg-neutral-700 hover:bg-neutral-600 active:bg-neutral-500 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
-          <IconWand /> Chat with AI
-        </button>
+        <Button className="w-full" size="lg" variant="secondary">
+          <MessageCircle className="h-4 w-4" />
+          Chat with AI Assistant
+        </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col max-w-2xl h-[80vh]">
+      <DialogContent className="flex flex-col max-w-3xl h-[85vh]">
         <DialogHeader>
-          <DialogTitle>Chat with AI</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <MessageCircle className="h-5 w-5 text-primary" />
+            AI Gaming Assistant
+          </DialogTitle>
           <DialogDescription>
-            Ask questions about the games, specify what you value in a game, or
-            just ask me to pick a game for you.
+            Ask questions about the games, get recommendations, or discuss what you value most in gaming.
           </DialogDescription>
         </DialogHeader>
+
+        {/* Chat Messages */}
         <div
           ref={chatContainerRef}
-          className="flex-grow overflow-y-auto space-y-4 px-1"
+          className="flex-grow overflow-y-auto space-y-3 px-1 py-2"
         >
+          {chatHistory.length === 0 && (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-center space-y-3 text-muted-foreground">
+                <Sparkles className="h-12 w-12 mx-auto opacity-50" />
+                <p className="text-sm">Start a conversation about your selected games</p>
+              </div>
+            </div>
+          )}
+
           {chatHistory.map((message) => (
             <div
               key={message.id}
@@ -115,67 +129,86 @@ const Chat = () => {
               }`}
             >
               <div
-                className={`max-w-[70%] p-3 rounded-lg ${
+                className={`max-w-[75%] p-4 rounded-lg ${
                   message.role === "user"
-                    ? "bg-blue-500 text-white"
-                    : "bg-gray-200 text-gray-800"
+                    ? "bg-primary text-primary-foreground"
+                    : "bg-muted border border-border"
                 }`}
               >
-                <Markdown>{message.content}</Markdown>
+                <div className="prose prose-sm dark:prose-invert max-w-none">
+                  <Markdown>{message.content}</Markdown>
+                </div>
               </div>
             </div>
           ))}
           {isLoading && (
             <div className="flex justify-start">
-              <div className="max-w-[70%] p-3 rounded-lg bg-gray-200 text-gray-800">
-                Thinking...
+              <div className="max-w-[75%] p-4 rounded-lg bg-muted border border-border">
+                <div className="flex items-center gap-2">
+                  <div className="animate-pulse">Thinking</div>
+                  <div className="flex gap-1">
+                    <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></div>
+                    <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></div>
+                    <div className="w-1.5 h-1.5 bg-current rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></div>
+                  </div>
+                </div>
               </div>
             </div>
           )}
         </div>
-        <DialogFooter className="mt-auto">
-          <div className="flex flex-col w-full items-center space-y-3">
-            <div className="flex gap-2 items-center w-full">
-              <IconWand size={18} />
-              <p className="text-sm text-white">Suggestions </p>
-            </div>
 
-            <div className="flex w-full gap-2 flex-wrap">
-              {suggestions.map((suggestion, index) => (
-                <Button
-                  key={index}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    setInputValue(suggestion);
-                  }}
-                >
-                  {suggestion}
-                </Button>
-              ))}
+        {/* Input Area */}
+        <DialogFooter className="mt-auto border-t pt-4">
+          <div className="flex flex-col w-full space-y-3">
+            {suggestions.length > 0 && chatHistory.length === 0 && (
+              <div className="space-y-2">
+                <div className="flex gap-2 items-center">
+                  <Sparkles className="h-4 w-4 text-primary" />
+                  <p className="text-sm font-medium">Suggested questions</p>
+                </div>
+                <div className="flex w-full gap-2 flex-wrap">
+                  {suggestions.map((suggestion, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setInputValue(suggestion);
+                      }}
+                      className="text-xs"
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="flex gap-2">
+              <Textarea
+                placeholder="Ask me anything about the games..."
+                className="flex-grow resize-none"
+                rows={2}
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+                disabled={isLoading}
+              />
+              <Button
+                type="submit"
+                onClick={handleSendMessage}
+                disabled={isLoading || inputValue.trim() === ""}
+                size="icon"
+                className="h-auto"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
             </div>
-            <Textarea
-              placeholder="Type your message here..."
-              className="flex-grow resize-none w-full"
-              rows={2}
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  handleSendMessage();
-                }
-              }}
-              disabled={isLoading}
-            />
-            <Button
-              className="w-full"
-              type="submit"
-              onClick={handleSendMessage}
-              disabled={isLoading || inputValue.trim() === ""}
-            >
-              {isLoading ? "Sending..." : "Send"}
-            </Button>
           </div>
         </DialogFooter>
       </DialogContent>

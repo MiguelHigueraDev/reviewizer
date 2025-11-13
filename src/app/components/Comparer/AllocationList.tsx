@@ -1,4 +1,4 @@
-import { IconInfoCircle } from "@tabler/icons-react";
+import { Info } from "lucide-react";
 import React from "react";
 import {
   Tooltip,
@@ -26,55 +26,89 @@ const AllocationList: React.FC<AllocationListProps> = ({
 }) => {
   return (
     <TooltipProvider>
-      <div className="flex flex-col gap-4">
-        {categories.map((category) => (
-          <div key={category} className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 min-w-0">
-                <span
-                  className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-neutral-700 text-base"
-                  aria-hidden
-                >
-                  {emojiMap[category]}
-                </span>
-                <label className="text-sm font-medium truncate">
-                  {category}
-                </label>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <button
-                      type="button"
-                      aria-label={`${category} info`}
-                      className="ml-1 inline-flex h-6 w-6 items-center justify-center rounded-md text-neutral-300 hover:text-neutral-100 hover:bg-neutral-700"
-                    >
-                      <IconInfoCircle size={16} />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="top"
-                    className="bg-neutral-800 text-neutral-100"
+      <div className="space-y-4 py-4">
+        {categories.map((category) => {
+          const value = allocation[category];
+          const percentage = (value / maxPerCategory) * 100;
+
+          return (
+            <div
+              key={category}
+              className="bg-card border border-border rounded-lg p-4 space-y-3 hover:bg-accent/50 transition-colors"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 min-w-0">
+                  <span
+                    className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-primary/10 text-lg border border-primary/20"
+                    aria-hidden
                   >
-                    {descriptionMap[category]}
-                  </TooltipContent>
-                </Tooltip>
+                    {emojiMap[category]}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <label className="text-sm font-medium truncate">
+                        {category}
+                      </label>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <button
+                            type="button"
+                            aria-label={`${category} info`}
+                            className="inline-flex h-5 w-5 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                          >
+                            <Info className="h-3 w-3" />
+                          </button>
+                        </TooltipTrigger>
+                        <TooltipContent side="top">
+                          <p className="max-w-xs text-xs">
+                            {descriptionMap[category]}
+                          </p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-lg font-bold tabular-nums">
+                    {value}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    / {maxPerCategory}
+                  </span>
+                </div>
               </div>
-              <span className="text-sm tabular-nums text-neutral-300">
-                {allocation[category]} / {maxPerCategory}
-              </span>
+
+              {/* Slider */}
+              <div className="space-y-2">
+                <input
+                  type="range"
+                  min={0}
+                  max={maxPerCategory}
+                  step={1}
+                  value={value}
+                  onChange={(event) =>
+                    onChange(category, Number(event.target.value))
+                  }
+                  className="w-full h-2 bg-muted rounded-full appearance-none cursor-pointer slider-thumb"
+                  style={{
+                    background: `linear-gradient(to right, hsl(var(--primary)) 0%, hsl(var(--primary)) ${percentage}%, hsl(var(--muted)) ${percentage}%, hsl(var(--muted)) 100%)`,
+                  }}
+                />
+                {/* Indicator dots */}
+                <div className="flex justify-between px-1">
+                  {Array.from({ length: maxPerCategory + 1 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`h-1 w-1 rounded-full ${
+                        i <= value ? "bg-primary" : "bg-muted"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </div>
             </div>
-            <input
-              type="range"
-              min={0}
-              max={maxPerCategory}
-              step={1}
-              value={allocation[category]}
-              onChange={(event) =>
-                onChange(category, Number(event.target.value))
-              }
-              className="w-full accent-neutral-200"
-            />
-          </div>
-        ))}
+          );
+        })}
       </div>
     </TooltipProvider>
   );

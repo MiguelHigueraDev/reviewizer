@@ -1,5 +1,6 @@
 import { GameResult } from "@/app/utils/types";
-import { IconForbid, IconMinus, IconPlus } from "@tabler/icons-react";
+import { Ban, Check, Plus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const GameSearchResults = ({
   results,
@@ -13,70 +14,78 @@ const GameSearchResults = ({
   onRemoveGame: (game: GameResult) => void;
 }) => {
   if (results.length < 1) {
-    return <p className="text-neutral-300">No results found.</p>;
+    return (
+      <div className="text-center py-8 text-muted-foreground">
+        <p className="text-sm">No results found. Try a different search term.</p>
+      </div>
+    );
   }
 
   return (
-    <ol className="flex gap-2 flex-col w-full">
-      {results.map((game) => (
-        <li className="flex gap-3 items-center" key={game.appId}>
-          <a
-            href={game.url}
-            className="w-[120px] h-[45px] flex-shrink-0"
-            target="_blank"
-            rel="noreferrer"
+    <div className="flex gap-3 flex-col w-full">
+      {results.map((game) => {
+        const isSelected = selectedGames.some((g) => g.appId === game.appId);
+        const isUnreleased =
+          !Date.parse(game.releaseDate) ||
+          Date.parse(game.releaseDate) > Date.now();
+
+        return (
+          <div
+            className="group flex gap-3 items-center p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-all duration-200"
+            key={game.appId}
           >
-            <img
-              src={game.imageUrl}
-              alt={game.title}
-              className="object-cover"
-            />
-          </a>
+            <a
+              href={game.url}
+              className="w-[120px] h-[45px] flex-shrink-0 rounded overflow-hidden"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img
+                src={game.imageUrl}
+                alt={game.title}
+                className="w-full h-full object-cover hover:opacity-80 transition-opacity"
+              />
+            </a>
 
-          <div className="flex-grow">
-            <h3 className="font-semibold">{game.title}</h3>
-            <p className="text-sm text-neutral-300">
-              Released {game.releaseDate}
-            </p>
+            <div className="flex-grow min-w-0">
+              <h3 className="font-semibold text-sm truncate">{game.title}</h3>
+              <p className="text-xs text-muted-foreground mt-1">
+                Released {game.releaseDate}
+              </p>
+            </div>
+
+            {isUnreleased ? (
+              <Button
+                variant="outline"
+                size="icon"
+                className="flex-shrink-0 h-9 w-9"
+                disabled
+              >
+                <Ban className="h-4 w-4" />
+              </Button>
+            ) : (
+              <Button
+                variant={isSelected ? "destructive" : "default"}
+                size="icon"
+                className="flex-shrink-0 h-9 w-9"
+                onClick={() => (isSelected ? onRemoveGame(game) : onAddGame(game))}
+                aria-label={
+                  isSelected
+                    ? "Remove game from selected games"
+                    : "Add game to selected games"
+                }
+              >
+                {isSelected ? (
+                  <Check className="h-4 w-4" />
+                ) : (
+                  <Plus className="h-4 w-4" />
+                )}
+              </Button>
+            )}
           </div>
-
-          {/* Disable button if game is unreleased */}
-          {!Date.parse(game.releaseDate) ||
-          Date.parse(game.releaseDate) > Date.now() ? (
-            <button
-              className="p-1.5 rounded-md transition-colors duration-100 bg-neutral-800 hover:bg-neutral-700 opacity-50 cursor-not-allowed"
-              disabled
-            >
-              <IconForbid />
-            </button>
-          ) : (
-            <button
-              className={`p-1.5 ${
-                selectedGames.some((g) => g.appId === game.appId)
-                  ? "bg-red-600 hover:bg-red-500"
-                  : "bg-neutral-800 hover:bg-neutral-700"
-              } rounded-md transition-colors duration-100`}
-              onClick={() =>
-                selectedGames.some((g) => g.appId === game.appId)
-                  ? onRemoveGame(game)
-                  : onAddGame(game)
-              }
-              aria-label={
-                selectedGames.some((g) => g.appId === game.appId)
-                  ? "Remove game from selected games"
-                  : "Add game to selected games"
-              }
-            >
-              {selectedGames.some((g) => g.appId === game.appId) ? (
-                <IconMinus />
-              ) : (
-                <IconPlus />
-              )}
-            </button>
-          )}
-        </li>
-      ))}
-    </ol>
+        );
+      })}
+    </div>
   );
 };
 

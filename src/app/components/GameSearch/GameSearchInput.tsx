@@ -1,4 +1,5 @@
-import { IconDice6 } from "@tabler/icons-react";
+import { Dices } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const GameSearchInput = ({
   query,
@@ -16,22 +17,24 @@ const GameSearchInput = ({
   };
 
   return (
-    <div className="flex gap-3 w-full items-center justify-center">
+    <div className="flex gap-2 w-full items-center">
       <input
         type="text"
         placeholder="Enter the name of a Steam game..."
-        className="flex mb-2 h-10 w-full bg-black rounded-md bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+        className="flex h-11 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
         value={query}
         onKeyDown={(e) => e.key === "Enter" && onSearch()}
         onChange={handleChange}
       />
-      <button
+      <Button
         aria-label="Get a random game"
-        className="mb-2 hover:bg-neutral-800 active:bg-neutral-700 p-1.5 rounded-md"
+        variant="outline"
+        size="icon"
         onClick={onRandomGame}
+        className="h-11 w-11 flex-shrink-0"
       >
-        <IconDice6 />
-      </button>
+        <Dices className="h-4 w-4" />
+      </Button>
     </div>
   );
 };

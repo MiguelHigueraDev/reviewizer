@@ -1,31 +1,59 @@
 const SummaryListSkeleton = () => {
   return (
-    <div className="mt-4">
-      <div className="flex justify-between items-center mb-4 gap-4">
-        <button className="p-2 w-10 h-10 bg-gray-400 animate-pulse rounded-md" />
-        <div className="font-bold md:text-lg">
-          <div className="w-32 md:w-[300px] h-[25px] bg-gray-400 animate-pulse" />
-        </div>
-        <button className="p-2 w-10 h-10 bg-gray-400 animate-pulse rounded-md" />
+    <div className="space-y-6 animate-pulse">
+      {/* Header Skeleton */}
+      <div className="space-y-2">
+        <div className="h-8 w-64 bg-muted rounded-md" />
+        <div className="h-4 w-48 bg-muted rounded-md" />
       </div>
-      <div className="p-4 bg-neutral-800 mt-2 rounded-xl">
-        <div className="w-full h-[300px] bg-gray-400 animate-pulse mb-3" />
-        <div className="w-24 h-[25px] bg-gray-400 animate-pulse mb-3" />
-        <ol className="ml-5 mb-2 flex flex-col gap-1">
-          <div className="max-w-24 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-          <div className="max-w-48 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-          <div className="max-w-20 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-          <div className="max-w-60 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-          <div className="max-w-24 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-        </ol>
-        <div className="w-24 h-[25px] bg-gray-400 animate-pulse mb-3" />
-        <ol className="ml-5 flex flex-col gap-1">
-          <div className="max-w-16 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-          <div className="max-w-48 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-          <div className="max-w-72 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-          <div className="max-w-60 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-          <div className="max-w-40 h-[20px] bg-gray-400 animate-pulse mb-0.5" />
-        </ol>
+
+      {/* Navigation Skeleton */}
+      <div className="flex justify-between items-center gap-4 bg-card border border-border rounded-lg p-4">
+        <div className="h-9 w-9 bg-muted rounded-md" />
+        <div className="flex-1 flex flex-col items-center gap-2">
+          <div className="h-6 w-48 bg-muted rounded-md" />
+          <div className="h-4 w-20 bg-muted rounded-md" />
+        </div>
+        <div className="h-9 w-9 bg-muted rounded-md" />
+      </div>
+
+      {/* Summary Card Skeleton */}
+      <div className="bg-card border border-border rounded-lg p-6 space-y-3">
+        <div className="h-4 w-full bg-muted rounded-md" />
+        <div className="h-4 w-full bg-muted rounded-md" />
+        <div className="h-4 w-3/4 bg-muted rounded-md" />
+      </div>
+
+      {/* Positives Card Skeleton */}
+      <div className="bg-card border border-border rounded-lg p-6 space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-5 bg-muted rounded-md" />
+          <div className="h-6 w-40 bg-muted rounded-md" />
+        </div>
+        <div className="space-y-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-start gap-2">
+              <div className="h-2 w-2 bg-muted rounded-full mt-1.5" />
+              <div className={`h-4 ${i % 2 === 0 ? 'w-3/4' : 'w-2/3'} bg-muted rounded-md`} />
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Negatives Card Skeleton */}
+      <div className="bg-card border border-border rounded-lg p-6 space-y-3">
+        <div className="flex items-center gap-2">
+          <div className="h-5 w-5 bg-muted rounded-md" />
+          <div className="h-6 w-44 bg-muted rounded-md" />
+        </div>
+        <div className="space-y-2">
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="flex items-start gap-2">
+              <div className="h-2 w-2 bg-muted rounded-full mt-1.5" />
+              <div className={`h-4 ${i % 2 === 0 ? 'w-5/6' : 'w-4/6'} bg-muted rounded-md`} />
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

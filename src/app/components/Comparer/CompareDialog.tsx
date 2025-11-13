@@ -8,7 +8,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { IconGitCompare } from "@tabler/icons-react";
+import { Scale, RotateCcw, Sparkles, AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import AllocationList from "./AllocationList";
 import type { Category } from "./game-categories";
 
@@ -46,30 +47,49 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <button className="flex items-center justify-center gap-2 w-full p-2 mt-4 bg-neutral-700 hover:bg-neutral-600 active:bg-neutral-500 rounded-md disabled:opacity-50 disabled:cursor-not-allowed">
-          <IconGitCompare /> Compare Games
-        </button>
+        <Button className="w-full" size="lg" variant="secondary">
+          <Scale className="h-4 w-4" />
+          Compare Games
+        </Button>
       </DialogTrigger>
-      <DialogContent className="flex flex-col max-w-2xl h-[80vh]">
+      <DialogContent className="flex flex-col max-w-3xl h-[85vh]">
         <DialogHeader>
-          <DialogTitle>Compare Games</DialogTitle>
+          <DialogTitle className="flex items-center gap-2">
+            <Scale className="h-5 w-5 text-primary" />
+            Compare Games
+          </DialogTitle>
           <DialogDescription>
-            Compare the games you have selected. Select what you value more in a
-            game and the AI will pick the best game for you.
+            Allocate points to what matters most to you, and let AI recommend the best game based on your preferences.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex-1 flex flex-col gap-6 overflow-y-auto pr-1">
+
+        {/* Points indicator card */}
+        <div className="bg-card border border-border rounded-lg p-4">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-medium">Distribute Your Points</h2>
-            <div className="text-sm text-neutral-400">
-              Remaining:{" "}
-              <span className="font-semibold text-neutral-200">
+            <div className="space-y-1">
+              <h3 className="text-sm font-medium">Point Budget</h3>
+              <p className="text-xs text-muted-foreground">
+                Allocate {maxPoints} points across categories (max {maxPerCategory} per category)
+              </p>
+            </div>
+            <div className="text-right">
+              <div className="text-2xl font-bold tabular-nums">
                 {remaining}
-              </span>{" "}
-              / {maxPoints}
+              </div>
+              <div className="text-xs text-muted-foreground">remaining</div>
             </div>
           </div>
 
+          {/* Progress bar */}
+          <div className="mt-3 h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary transition-all duration-300"
+              style={{ width: `${(totalAllocated / maxPoints) * 100}%` }}
+            />
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto pr-1">
           <AllocationList
             allocation={allocation}
             maxPerCategory={maxPerCategory}
@@ -77,31 +97,48 @@ const CompareDialog: React.FC<CompareDialogProps> = ({
           />
         </div>
 
-        {error && <div className="mt-4 text-sm text-red-400">{error}</div>}
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/50 rounded-lg p-3 flex items-start gap-2">
+            <AlertCircle className="h-4 w-4 text-destructive mt-0.5 flex-shrink-0" />
+            <p className="text-sm text-destructive">{error}</p>
+          </div>
+        )}
 
-        <DialogFooter className="mt-2">
-          <div className="flex w-full items-center justify-between gap-3">
+        <DialogFooter className="border-t pt-4">
+          <div className="flex w-full items-center justify-between gap-3 flex-wrap">
             <div className="flex items-center gap-3">
-              <div className="text-xs text-neutral-400">
-                Must allocate at least {minRequiredPoints} points.
-              </div>
-              <button
+              <p className="text-xs text-muted-foreground">
+                Minimum {minRequiredPoints} points required
+              </p>
+              <Button
                 type="button"
-                className="text-xs px-2 py-1 rounded-md bg-neutral-800 hover:bg-neutral-700 text-neutral-200"
+                variant="outline"
+                size="sm"
                 onClick={onReset}
               >
-                Reset points
-              </button>
+                <RotateCcw className="h-3 w-3" />
+                Reset
+              </Button>
             </div>
-            <button
-              className="px-3 py-2 rounded-md bg-neutral-700 hover:bg-neutral-600 active:bg-neutral-500 text-sm disabled:bg-neutral-500 disabled:text-neutral-400 disabled:cursor-not-allowed"
+            <Button
               disabled={isLoading || totalAllocated < minRequiredPoints}
               onClick={async () => {
                 await onRequestRecommendation();
               }}
+              size="lg"
             >
-              {isLoading ? "Getting Recommendation..." : "Get AI Recommendation"}
-            </button>
+              {isLoading ? (
+                <>
+                  <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+                  Getting Recommendation...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4" />
+                  Get AI Recommendation
+                </>
+              )}
+            </Button>
           </div>
         </DialogFooter>
       </DialogContent>

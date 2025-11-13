@@ -2,12 +2,12 @@
 
 import GameSearch from "./components/GameSearch/GameSearch";
 import { useRef, useState } from "react";
-import SelectedGamesModal from "./components/SelectedGames/SelectedGamesModal";
+import SelectedGamesDrawer from "./components/SelectedGames/SelectedGamesDrawer";
+import SelectedGamesDrawerTrigger from "./components/SelectedGames/SelectedGamesDrawerTrigger";
 import AppIntro from "./components/AppIntro";
 import SummaryList from "./components/SummarySection/SummaryList";
 import { fetchAiSummary, fetchReviews } from "./utils/dataFetching";
 import GetReviewsButton from "./components/SummarySection/GetReviewsButton";
-import SelectedGamesModalButton from "./components/SelectedGames/SelectedGamesModalButton";
 import SummaryListSkeleton from "./components/SummarySection/SummaryListSkeleton";
 import { GameResult, ReviewList, SummaryResponse } from "./utils/types";
 import { useReviewStore } from "./stores/reviewStore";
@@ -23,7 +23,7 @@ export default function Home() {
     setSummaries,
     setReviews,
   } = useReviewStore();
-  const [isSelectedModalVisible, setIsSelectedModalVisible] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [summariesLoading, setSummariesLoading] = useState(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
@@ -111,57 +111,59 @@ export default function Home() {
   return (
     <main
       ref={containerRef}
-      className={`dark min-h-screen max-w-7xl mx-auto p-4 md:p-16 ${
+      className={`dark min-h-screen max-w-7xl mx-auto p-4 md:p-8 lg:p-12 ${
         shouldCenterLayout
           ? "flex items-center justify-center"
-          : "lg:flex lg:items-center lg:gap-10 lg:justify-center"
+          : "lg:flex lg:items-start lg:gap-12 lg:justify-center"
       }`}
     >
-      <div className={`${shouldCenterLayout ? "w-full max-w-lg" : "lg:w-1/2"}`}>
+      <div
+        className={`${
+          shouldCenterLayout
+            ? "w-full max-w-2xl"
+            : "lg:w-1/2 lg:sticky lg:top-8"
+        }`}
+      >
         <AppIntro />
-        <GameSearch
-          selectedGames={selectedGames}
-          onAddGame={addGame}
-          onRemoveGame={removeGame}
-        />
-        <GetReviewsButton
-          selectedGames={selectedGames}
-          onClick={handleGetReviews}
-          isLoading={summariesLoading}
-        />
-
-        <hr className="block lg:hidden w-full mt-4 border-neutral-600" />
+        <div className="space-y-6">
+          <GameSearch
+            selectedGames={selectedGames}
+            onAddGame={addGame}
+            onRemoveGame={removeGame}
+          />
+          <GetReviewsButton
+            selectedGames={selectedGames}
+            onClick={handleGetReviews}
+            isLoading={summariesLoading}
+          />
+        </div>
       </div>
 
       {(summariesLoading || summaries.length > 0) && (
-        <div className="lg:w-1/2 lg:self-center mt-8 lg:mt-0">
+        <div className="lg:w-1/2 mt-12 lg:mt-0">
           {summariesLoading ? (
             <SummaryListSkeleton />
           ) : (
-            <>
+            <div className="space-y-6">
               <SummaryList summaries={summaries} />
               {summaries.length > 0 && <Chat />}
               {summaries.length > 1 && <Comparer />}
-            </>
+            </div>
           )}
         </div>
       )}
 
-      {/* Selected games modal and toggle button */}
-      <SelectedGamesModalButton
+      {/* Selected games drawer and trigger button */}
+      <SelectedGamesDrawerTrigger
         selectedGames={selectedGames}
-        onToggleVisibility={() =>
-          setIsSelectedModalVisible(!isSelectedModalVisible)
-        }
+        onOpenDrawer={() => setIsDrawerOpen(true)}
       />
 
-      <SelectedGamesModal
-        isVisible={isSelectedModalVisible}
+      <SelectedGamesDrawer
+        isOpen={isDrawerOpen}
         selectedGames={selectedGames}
         onRemoveGame={removeGame}
-        onToggleVisibility={() =>
-          setIsSelectedModalVisible(!isSelectedModalVisible)
-        }
+        onOpenChange={setIsDrawerOpen}
       />
     </main>
   );
